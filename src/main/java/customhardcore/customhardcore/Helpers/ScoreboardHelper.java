@@ -21,8 +21,9 @@ public class ScoreboardHelper {
 
         int scorePos = 1;
         for (Player plyr : Bukkit.getServer().getOnlinePlayers()) {
-            Score plyrScore = objective.getScore(String.format("%s%s [%o] {%o}", ChatColor.GREEN, plyr.getName(),
-                    plyr.getStatistic(Statistic.DEATHS), Math.round(plyr.getHealth())));
+            Score plyrScore = objective.getScore(ChatColor.translateAlternateColorCodes('&',
+                    String.format("&a%s %o&4☠ &a%s&4&4❤&a", plyr.getName(),
+                    plyr.getStatistic(Statistic.DEATHS), Math.round(plyr.getHealth()))));
             plyrScore.setScore(scorePos);
 
             scorePos++;

@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -65,6 +66,12 @@ public class EventListeners implements Listener {
         ScoreboardHelper.removeBoard(event.getPlayer());
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 10L);
+    }
+
+    @EventHandler
+    public void onHeal(EntityRegainHealthEvent event) {
+        if (event.getEntity() instanceof Player)
+            Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::createOrUpdatePlayerBoard);
     }
 
 }
