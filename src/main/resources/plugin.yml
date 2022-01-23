@@ -1,0 +1,50 @@
+name: CustomHardcore
+version: '${project.version}'
+main: customhardcore.customhardcore.CustomHardcore
+api-version: 1.18
+prefix: Loaded custom hardcore
+authors: [ JackBracey ]
+description: A custom hardcore thing I guess
+
+commands:
+  set_sign_to_special:
+    description: Gives a special sign
+    usage: /set_sign_to_special
+    permission: CustomHardcore.set_sign_to_special
+    permission-message: You don't have permission to use that
+
+  set_purgatory_point:
+    description: Set where people tp when they die
+    usage: /set_purgatory_point
+    permission: CustomHardcore.set_purgatory_point
+    permission-message: You don't have permission to use that
+
+  get_player_deaths:
+    description: Get number of player deaths with argument for username, if not set, then shows current player's deaths
+    usage: /get_player_deaths
+    permission: CustomHardcore.get_player_deaths
+    permission-message: You don't have permission to use that
+
+  toggle_max_deaths:
+    description: Toggles the max deaths settings on/off
+    usage: /toggle_max_deaths
+    permission: CustomHardcore.toggle_max_deaths
+    permission-message: You don't have permission to use that
+
+  set_max_deaths:
+    description: Sets the number of deaths before ban
+    usage: /set_max_deaths
+    permission: CustomHardcore.set_max_deaths
+    permission-message: You don't have permission to use that
+
+  set_death_counter:
+    description: Sets a player's number of deaths
+    usage: /set_death_counter
+    permission: CustomHardcore.set_death_counter
+    permission-message: You don't have permission to use that
+
+  toggle_teleport_on_death:
+    description: Toggle purgatory
+    usage: /toggle_teleport_on_death
+    permission: CustomHardcore.toggle_teleport_on_death
+    permission-message: You don't have permission to use that
