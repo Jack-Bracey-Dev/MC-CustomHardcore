@@ -1,6 +1,5 @@
 package customhardcore.customhardcore;
 
-import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Misc;
 import customhardcore.customhardcore.Helpers.Msg;
@@ -67,7 +66,7 @@ public class Commands implements CommandExecutor {
                 Integer.parseInt(args[1])), "&3");
 
         if (ConfigurationHelper.isMaxDeathsEnabled())
-            ScoreboardHelper.createOrUpdatePlayerBoard(target.getPlayer());
+            ScoreboardHelper.updatePlayerBoards();
     }
 
     private void setMaxDeaths(CommandSender sender, @Nullable String[] args) {

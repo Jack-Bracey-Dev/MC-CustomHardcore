@@ -12,9 +12,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Objects;
 
@@ -30,6 +32,7 @@ public class EventListeners implements Listener {
     public void onPlayerDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = ((Player) event.getEntity());
+            ScoreboardHelper.createOrUpdatePlayerBoard(player);
             if (event.getDamage() > player.getHealth()) {
                 event.setCancelled(true);
                 PlayerHelper.onDeathEvent(player);
@@ -54,13 +57,21 @@ public class EventListeners implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         if (ConfigurationHelper.isMaxDeathsEnabled())
-            ScoreboardHelper.createOrUpdatePlayerBoard(event.getPlayer());
+            ScoreboardHelper.updatePlayerBoards();
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         System.out.println("Removing board for " + event.getPlayer().getName());
         ScoreboardHelper.removeBoard(event.getPlayer());
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 10L);
+    }
+
+    @EventHandler
+    public void onHeal(EntityRegainHealthEvent event) {
+        if (event.getEntity() instanceof Player)
+            Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::createOrUpdatePlayerBoard);
     }
 
 }

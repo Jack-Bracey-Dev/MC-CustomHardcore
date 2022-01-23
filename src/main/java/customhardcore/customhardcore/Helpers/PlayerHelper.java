@@ -77,6 +77,9 @@ public class PlayerHelper {
 
         Msg.sendGlobal(String.format("%s died and has been sent to purgatory, how careless...",
                 player.getName()), "&4&l");
+
+        ScoreboardHelper.updatePlayerBoards();
+        
     }
 
 }
