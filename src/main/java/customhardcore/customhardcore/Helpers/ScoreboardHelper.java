@@ -18,20 +18,24 @@ public class ScoreboardHelper {
         Objective objective = board.registerNewObjective(player.getName() + "-CustomHardcore-Main", "dummy",
                 ChatColor.translateAlternateColorCodes('&', "&3&lCustom&bHardcore"));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        Score dummyScore1 = objective.getScore(ChatColor.DARK_BLUE + "-=-=-=-=-=-=-=-");
-        dummyScore1.setScore(4);
+        
 
-        int maxDeaths = ConfigurationHelper.getConfig().getInt(ConfigurationHelper.ConfigurationValues.MAX_DEATHS.name());
-        int playerDeaths = player.getStatistic(Statistic.DEATHS);
+        // int maxDeaths = ConfigurationHelper.getConfig().getInt(ConfigurationHelper.ConfigurationValues.MAX_DEATHS.name()); -- JACK IS BAE (AFTER FREYA :( ))
+        // int playerDeaths = player.getStatistic(Statistic.DEATHS); -- JACK IS BAE (AFTER FREYA :( ))
 
-        Score score = objective.getScore(ChatColor.AQUA + "Deaths Remaining: " + (maxDeaths-playerDeaths));
-        score.setScore(3);
+        int scorePos = 1;
+        for (Player plyr : Bukkit.getServer().getOnlinePlayers()) {
+            Score plyrScore = objective.getScore(ChatColor.GREEN + plyr.getName() + " [" + plyr.getStatistic(Statistic.DEATHS) + "]");
+            plyrScore.setScore(scorePos);
 
-        Score score2 = objective.getScore(ChatColor.GREEN + "Deaths: " + playerDeaths);
-        score2.setScore(2);
+            scorePos++;
+        }
 
-        Score score3 = objective.getScore(ChatColor.AQUA + "Max Deaths: " + maxDeaths);
-        score3.setScore(1);
+        Score scoreInfo = objective.getScore(ChatColor.translateAlternateColorCodes('&', "&n&bPlayer Deaths"));
+        scoreInfo.setScore(scorePos);
+
+        Score scoreHeader = objective.getScore(ChatColor.DARK_BLUE + "-=-=-=-=-=-=-=-");
+        scoreHeader.setScore(scorePos+1);
 
         player.setScoreboard(board);
     }
@@ -61,6 +65,12 @@ public class ScoreboardHelper {
         player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
         Objective objective = player.getScoreboard().getObjective(DisplaySlot.SIDEBAR);
         if (objective != null) objective.unregister();
+    }
+
+    public static void updatePlayerBoards() {
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            updateBoard(player);
+        }
     }
 
 }

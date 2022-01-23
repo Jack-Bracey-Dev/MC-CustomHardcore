@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Objects;
 
@@ -54,13 +55,23 @@ public class EventListeners implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         if (ConfigurationHelper.isMaxDeathsEnabled())
-            ScoreboardHelper.createOrUpdatePlayerBoard(event.getPlayer());
+            ScoreboardHelper.updatePlayerBoards();
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         System.out.println("Removing board for " + event.getPlayer().getName());
         ScoreboardHelper.removeBoard(event.getPlayer());
+        
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), new Runnable() {
+
+                @Override
+                public void run() {
+                    ScoreboardHelper.updatePlayerBoards();
+                }
+        }, 40L);
+        
     }
 
 }
