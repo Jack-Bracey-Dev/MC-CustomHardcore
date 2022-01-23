@@ -70,7 +70,7 @@ public class EventListeners implements Listener {
                 public void run() {
                     ScoreboardHelper.updatePlayerBoards();
                 }
-        }, 40L);
+        }, 10L);
         
     }
 
