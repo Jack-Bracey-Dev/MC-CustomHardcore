@@ -18,14 +18,11 @@ public class ScoreboardHelper {
         Objective objective = board.registerNewObjective(player.getName() + "-CustomHardcore-Main", "dummy",
                 ChatColor.translateAlternateColorCodes('&', "&3&lCustom&bHardcore"));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        
-
-        // int maxDeaths = ConfigurationHelper.getConfig().getInt(ConfigurationHelper.ConfigurationValues.MAX_DEATHS.name()); -- JACK IS BAE (AFTER FREYA :( ))
-        // int playerDeaths = player.getStatistic(Statistic.DEATHS); -- JACK IS BAE (AFTER FREYA :( ))
 
         int scorePos = 1;
         for (Player plyr : Bukkit.getServer().getOnlinePlayers()) {
-            Score plyrScore = objective.getScore(ChatColor.GREEN + plyr.getName() + " [" + plyr.getStatistic(Statistic.DEATHS) + "]");
+            Score plyrScore = objective.getScore(String.format("%s%s [%o] {%o}", ChatColor.GREEN, plyr.getName(),
+                    plyr.getStatistic(Statistic.DEATHS), Math.round(plyr.getHealth())));
             plyrScore.setScore(scorePos);
 
             scorePos++;

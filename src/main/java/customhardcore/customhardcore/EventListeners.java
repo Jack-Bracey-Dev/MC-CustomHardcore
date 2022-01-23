@@ -31,6 +31,7 @@ public class EventListeners implements Listener {
     public void onPlayerDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = ((Player) event.getEntity());
+            ScoreboardHelper.createOrUpdatePlayerBoard(player);
             if (event.getDamage() > player.getHealth()) {
                 event.setCancelled(true);
                 PlayerHelper.onDeathEvent(player);
@@ -62,16 +63,8 @@ public class EventListeners implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         System.out.println("Removing board for " + event.getPlayer().getName());
         ScoreboardHelper.removeBoard(event.getPlayer());
-        
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), new Runnable() {
-
-                @Override
-                public void run() {
-                    ScoreboardHelper.updatePlayerBoards();
-                }
-        }, 10L);
-        
+        scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 10L);
     }
 
 }
