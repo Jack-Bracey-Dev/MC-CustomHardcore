@@ -130,11 +130,11 @@ public class ConfigurationHelper {
     }
 
     public static void checkAndSetConfig() {
-        instance.saveConfig();
+        save();
         Arrays.stream(ConfigurationValues.values()).filter(val -> val.required).forEach(val -> {
             if (!instance.getConfig().contains(val.name()))
                 instance.getConfig().set(val.name(), val.defaultValue);
-            instance.saveConfig();
+            save();
         });
     }
 

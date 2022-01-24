@@ -3,8 +3,9 @@ version: '${project.version}'
 main: customhardcore.customhardcore.CustomHardcore
 api-version: 1.18
 prefix: Loaded custom hardcore
-authors: [ JackBracey ]
+authors: [ JackBracey, JoshHill ]
 description: A custom hardcore thing I guess
+depend: [ Vault ]
 
 commands:
   get_player_deaths:
