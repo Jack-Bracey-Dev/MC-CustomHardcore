@@ -35,8 +35,7 @@ public final class CustomHardcore extends JavaPlugin {
     }
 
     private void enableCommands() {
-        List<String> commands = Arrays.asList("set_sign_to_special","set_purgatory_point","get_player_deaths",
-                "toggle_max_deaths","set_max_deaths","set_death_counter","toggle_teleport_on_death");
+        List<String> commands = Arrays.asList("get_player_deaths","set_max_deaths","set_death_counter","open_config");
         commands.forEach(command -> Objects.requireNonNull(getCommand(command)).setExecutor(new Commands()));
     }
 
