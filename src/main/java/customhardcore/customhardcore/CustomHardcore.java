@@ -1,6 +1,7 @@
 package customhardcore.customhardcore;
 
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
+import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Misc;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
 import net.milkbowl.vault.chat.Chat;
@@ -10,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
@@ -36,8 +38,8 @@ public final class CustomHardcore extends JavaPlugin {
             return;
         }
 
-        setupPermissions();
-        setupChat();
+        if (!setupPermissions()) Logger.error("setupPermissions for vault failed.");
+        if (!setupChat()) Logger.error("setupChat for Vault failed.");
 
         Misc.createSigns(getConfig().getLocation(ConfigurationHelper.ConfigurationValues.SIGN_LOCATION.name()));
 
@@ -50,27 +52,35 @@ public final class CustomHardcore extends JavaPlugin {
     }
 
     private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) return false;
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            Logger.error("Can't find vault");
+            return false;
+        }
+
+        ServicesManager serviceManager = getServer().getServicesManager();
+        serviceManager.register(Economy.class, );
 
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        getServer().getConsoleSender().sendMessage(ChatColor.AQUA +
-                Boolean.toString(rsp != null));
-        if (rsp == null)
+        if (rsp == null) {
+            Logger.error("Can't find economy RegisteredServiceProvider");
             return false;
+        }
         econ = rsp.getProvider();
         return true;
     }
 
     private boolean setupChat() {
         RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
+        if (rsp == null) return false;
         chat = rsp.getProvider();
-        return chat != null;
+        return true;
     }
 
     private boolean setupPermissions() {
         RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        if (rsp == null) return false;
         perms = rsp.getProvider();
-        return perms != null;
+        return true;
     }
 
     private void enableCommands() {
