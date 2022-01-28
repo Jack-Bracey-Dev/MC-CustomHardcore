@@ -9,11 +9,15 @@ public class Logger {
         log("&4" + message);
     }
 
+    public static <E extends Exception> void error(String message, E exception) {
+        Bukkit.getServer().getConsoleSender().sendMessage("&4" + message, exception.getMessage());
+    }
+
     public static void info(String message) {
         log("&9" + message);
     }
 
-    public static void log(String message) {
+    private static void log(String message) {
         Bukkit.getServer().getConsoleSender().sendMessage(
                 ChatColor.translateAlternateColorCodes('&',
                         String.format("&3Custom&bHardcore: &f%s", message)));
