@@ -1,6 +1,7 @@
 package customhardcore.customhardcore;
 
 import customhardcore.customhardcore.Helpers.*;
+import customhardcore.customhardcore.Helpers.Levelling.PlayerSave;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -59,6 +60,7 @@ public class EventListeners implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        PlayerSave.getOrCreatePlayerSave(event.getPlayer());
         if (ConfigurationHelper.isMaxDeathsEnabled())
             ScoreboardHelper.updatePlayerBoards();
     }
@@ -66,6 +68,7 @@ public class EventListeners implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         System.out.println("Removing board for " + event.getPlayer().getName());
+//        PlayerSave.removePlayer(event.getPlayer().getUniqueId());
         ScoreboardHelper.removeBoard(event.getPlayer());
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 10L);
