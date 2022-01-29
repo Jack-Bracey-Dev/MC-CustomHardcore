@@ -1,14 +1,8 @@
 package customhardcore.customhardcore;
 
-import customhardcore.customhardcore.Helpers.ConfigurationHelper;
-import customhardcore.customhardcore.Helpers.Misc;
-import customhardcore.customhardcore.Helpers.Msg;
-import customhardcore.customhardcore.Helpers.PlayerHelper;
-import customhardcore.customhardcore.Helpers.ScoreboardHelper;
+import customhardcore.customhardcore.Helpers.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Statistic;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,17 +17,8 @@ public class Commands implements CommandExecutor {
     public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command command, @Nullable String label,
                              @Nullable String[] args) {
         switch (command.getName()) {
-            case "set_sign_to_special":
-                setSignToSpecial(sender);
-                break;
-            case "set_purgatory_point":
-                setPurgatoryPoint(sender);
-                break;
             case "get_player_deaths":
                 getPlayerDeaths(args, sender);
-                break;
-            case "toggle_max_deaths":
-                toggleMaxDeaths(sender);
                 break;
             case "set_max_deaths":
                 setMaxDeaths(sender, args);
@@ -41,11 +26,18 @@ public class Commands implements CommandExecutor {
             case "set_death_counter":
                 setPlayerDeaths(sender, args);
                 break;
-            case "toggle_teleport_on_death":
-                toggleTeleportOnDeath(sender);
+            case "open_config":
+                openConfigurationUI(sender);
                 break;
         }
         return true;
+    }
+
+    private void openConfigurationUI(CommandSender sender) {
+        if (!(sender instanceof Player)) return;
+        Player player = (Player) sender;
+
+        UIHelper.createInventoryUI(player);
     }
 
     private void setPlayerDeaths(CommandSender sender, String[] args) {
@@ -81,19 +73,6 @@ public class Commands implements CommandExecutor {
         Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::createOrUpdatePlayerBoard);
     }
 
-    private void toggleMaxDeaths(CommandSender sender) {
-        boolean enabled = ConfigurationHelper.getConfig().getBoolean(
-                ConfigurationHelper.ConfigurationValues.ENABLE_MAX_DEATHS.name());
-        ConfigurationHelper.getConfig().set(ConfigurationHelper.ConfigurationValues.ENABLE_MAX_DEATHS.name(),
-                (!enabled));
-        Msg.send(sender, "Max deaths set to &b" + !enabled);
-
-        if (!enabled)
-            Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::createOrUpdatePlayerBoard);
-        else
-            Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::removeBoard);
-    }
-
     private void getPlayerDeaths(String[] args, CommandSender sender) {
         Optional<Player> optionalPlayer = PlayerHelper.checkIfSenderIsPlayer(sender);
         if (!optionalPlayer.isPresent()) {
@@ -115,45 +94,4 @@ public class Commands implements CommandExecutor {
             Msg.send(player, String.format("You have %o deaths", player.getStatistic(Statistic.DEATHS)), "&2");
     }
 
-    private void setPurgatoryPoint(CommandSender sender) {
-        Optional<Player> optionalPlayer = PlayerHelper.checkIfSenderIsPlayer(sender);
-        if (!optionalPlayer.isPresent()) {
-            Msg.send(sender, "Must be a player to send this command", "&4");
-            return;
-        }
-        Player player = optionalPlayer.get();
-
-        ConfigurationHelper.getConfig().set(ConfigurationHelper.ConfigurationValues.DEATH_LOCATION.name(), player.getLocation());
-        CustomHardcore.getInstance().saveConfig();
-        Msg.send(player, "Purgatory point set", "&3");
-    }
-
-    private void setSignToSpecial(CommandSender sender) {
-        Optional<Player> optionalPlayer = PlayerHelper.checkIfSenderIsPlayer(sender);
-        if (!optionalPlayer.isPresent()) {
-            Msg.send(sender, "Must be a player to send this command", "&4");
-            return;
-        }
-        Player player = optionalPlayer.get();
-
-        Location previousLocation = ConfigurationHelper.getConfig().getLocation(ConfigurationHelper.ConfigurationValues.SIGN_LOCATION.name());
-        Block block = player.getTargetBlockExact(5);
-        if (block != null) {
-            Location location = block.getLocation();
-            location.add(0, 1, 0);
-            location.setDirection(player.getEyeLocation().getDirection().multiply(-1));
-            ConfigurationHelper.getConfig().set(ConfigurationHelper.ConfigurationValues.SIGN_LOCATION.name(), location);
-            CustomHardcore.getInstance().saveConfig();
-            Misc.createSigns(ConfigurationHelper.getConfig().getLocation(ConfigurationHelper.ConfigurationValues.SIGN_LOCATION.name()));
-            Misc.removeOrphanedSign(previousLocation);
-        }
-    }
-
-    private void toggleTeleportOnDeath(CommandSender sender) {
-        boolean enabled = ConfigurationHelper.getConfig().getBoolean(
-                ConfigurationHelper.ConfigurationValues.ENABLE_TELEPORT_ON_DEATH.name());
-        ConfigurationHelper.getConfig().set(ConfigurationHelper.ConfigurationValues.ENABLE_TELEPORT_ON_DEATH.name(), (!enabled));
-        ConfigurationHelper.save();
-        Msg.send(sender, "Teleport on death set to &b" + !enabled);
-    }
 }

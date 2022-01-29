@@ -1,24 +1,27 @@
 package customhardcore.customhardcore;
 
-import customhardcore.customhardcore.Helpers.ConfigurationHelper;
-import customhardcore.customhardcore.Helpers.Msg;
-import customhardcore.customhardcore.Helpers.PlayerHelper;
-import customhardcore.customhardcore.Helpers.ScoreboardHelper;
+import customhardcore.customhardcore.Helpers.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class EventListeners implements Listener {
 
@@ -72,6 +75,47 @@ public class EventListeners implements Listener {
     public void onHeal(EntityRegainHealthEvent event) {
         if (event.getEntity() instanceof Player)
             Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::createOrUpdatePlayerBoard);
+    }
+
+    @EventHandler
+    public void onInventoryItemTouched(InventoryClickEvent event) {
+        if (!event.getView().getTitle().equalsIgnoreCase("Configuration")) return;
+
+        event.setCancelled(true);
+        if (event.getCurrentItem() == null || event.getCurrentItem().getItemMeta() == null)
+            return;
+
+        if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("SET") ||
+                event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("NOT SET")) return;
+
+        String name = event.getCurrentItem().getItemMeta().getPersistentDataContainer()
+                .get(Objects.requireNonNull(NamespacedKey.fromString(UIHelper.SETTING_META_HEADER)),
+                        PersistentDataType.STRING);
+
+        if (name == null) {
+            Logger.error("Inventory item doesn't have metadata for name");
+            return;
+        }
+
+        ConfigurationHelper.ConfigurationValues value = ConfigurationHelper.ConfigurationValues
+                .getConfigValueByString(name);
+
+        if (value == null) {
+            Logger.error("Could not get configuration value from onInventoryItemTouched");
+            return;
+        }
+
+        value.onChange(event.getWhoClicked() instanceof Player ? (Player) event.getWhoClicked() : null);
+        if (event.getInventory().getViewers().size() > 0) {
+            List<HumanEntity> entities = event.getInventory().getViewers().stream()
+                    .filter(entity -> (entity instanceof Player)).collect(Collectors.toList());
+            if (entities.size() > 0)
+                entities.forEach(entity -> {
+                    Player player = (Player) entity;
+                    UIHelper.updateInventoryUI(player, event.getInventory());
+                });
+        }
+
     }
 
 }
