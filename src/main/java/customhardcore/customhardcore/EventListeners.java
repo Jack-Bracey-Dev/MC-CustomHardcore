@@ -35,7 +35,8 @@ public class EventListeners implements Listener {
     public void onPlayerDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = ((Player) event.getEntity());
-            ScoreboardHelper.createOrUpdatePlayerBoard(player);
+            Bukkit.getServer().getScheduler()
+                .scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 5L);
             if (event.getDamage() > player.getHealth()) {
                 event.setCancelled(true);
                 PlayerHelper.onDeathEvent(player);
@@ -74,7 +75,8 @@ public class EventListeners implements Listener {
     @EventHandler
     public void onHeal(EntityRegainHealthEvent event) {
         if (event.getEntity() instanceof Player)
-            Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::createOrUpdatePlayerBoard);
+            Bukkit.getServer().getScheduler()
+                .scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 5L);
     }
 
     @EventHandler
