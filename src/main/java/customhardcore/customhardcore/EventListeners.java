@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,6 +32,11 @@ public class EventListeners implements Listener {
     public void onPlayerDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player)
             PlayerHelper.onDeathEvent(((Player) event.getEntity()));
+
+        if (event.getEntity().getKiller() != null) {
+            Player killer = event.getEntity().getKiller();
+            PlayerSave.addXp(killer, event.getDroppedExp());
+        }
     }
 
     @EventHandler
@@ -61,7 +67,7 @@ public class EventListeners implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        PlayerSave.getOrCreatePlayerSave(event.getPlayer());
+        PlayerSave.initialisePlayer(event.getPlayer());
         if (ConfigurationHelper.isMaxDeathsEnabled())
             ScoreboardHelper.updatePlayerBoards();
     }
@@ -124,7 +130,7 @@ public class EventListeners implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        PlayerSave.addXp(player, 1);
+        PlayerSave.addXp(player, Math.round(event.getBlock().getType().getHardness()));
     }
 
 }

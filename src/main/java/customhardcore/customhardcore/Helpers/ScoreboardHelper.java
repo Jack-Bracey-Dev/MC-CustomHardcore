@@ -1,5 +1,6 @@
 package customhardcore.customhardcore.Helpers;
 
+import customhardcore.customhardcore.Helpers.Levelling.PlayerData;
 import customhardcore.customhardcore.Helpers.Levelling.PlayerSave;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,11 +31,16 @@ public class ScoreboardHelper {
             scorePos++;
         }
 
-//        Score score = objective.getScore(
-//                ChatColor.translateAlternateColorCodes('&',
-//                        PlayerSave.calculateLevelProgress("&l ||||||||||||||||||||||||||||||||||||||||",
-//                                PlayerSave.getPlayer(player))));
-//        score.setScore(scorePos);
+        PlayerData playerData = PlayerSave.getPlayerData(player);
+
+        Score score = objective.getScore(
+                ChatColor.translateAlternateColorCodes('&',
+                        "&3&l" + playerData.getLevel() + " " +
+                        "&a&l" +
+                                PlayerSave.calculateLevelProgress("||||||||||||||||||||||||||||||||||||||||",
+                                PlayerSave.getPlayerData(player)) +
+                                "&3&l " + (playerData.getLevel()+1)));
+        score.setScore(scorePos);
 
         player.setScoreboard(board);
     }

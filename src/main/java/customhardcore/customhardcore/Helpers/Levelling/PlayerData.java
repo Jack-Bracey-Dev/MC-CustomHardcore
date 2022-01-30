@@ -1,12 +1,13 @@
 package customhardcore.customhardcore.Helpers.Levelling;
 
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
-import javax.annotation.Nonnull;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-public class PlayerData implements ConfigurationSerializable {
+public class PlayerData implements Serializable {
 
     private String id;
 
@@ -14,33 +15,32 @@ public class PlayerData implements ConfigurationSerializable {
 
     private Integer xp;
 
+    private Integer nextLevelXp;
+
+    private Integer points;
+
     private List<Integer> unlocks;
 
-    public PlayerData(String id, Integer level, Integer xp, List<Integer> unlocks) {
+    public PlayerData(String id, Integer level, Integer xp, Integer nextLevelXp, Integer points,
+                      List<Integer> unlocks) {
         this.id = id;
         this.level = level;
         this.xp = xp;
+        this.nextLevelXp = nextLevelXp;
+        this.points = points;
         this.unlocks = unlocks;
     }
 
     public PlayerData(Player player) {
         this.id = player.getUniqueId().toString();
         this.xp = 0;
-        this.level = 0;
+        this.level = 1;
+        this.points = 0;
+        this.nextLevelXp = PlayerSave.getNextLevelXpAmount(1);
         this.unlocks = new ArrayList<>();
     }
 
     public PlayerData() {
-    }
-
-    public PlayerData(Map<String, Object> map) {
-        this.id = (String) map.get("id");
-        this.xp = (Integer) map.get("xp");
-        this.level = (Integer) map.get("level");
-        List<Integer> unlocks = new ArrayList<>();
-        if (map.get("unlocks") instanceof List)
-            unlocks = (List<Integer>) map.get("unlocks");
-        this.unlocks = unlocks;
     }
 
     public String getId() {
@@ -97,15 +97,32 @@ public class PlayerData implements ConfigurationSerializable {
         this.unlocks = unlocks;
     }
 
-    @Override
-    @Nonnull
-    public Map<String, Object> serialize() {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("id", this.id);
-        map.put("xp", this.xp);
-        map.put("level", this.level);
-        map.put("unlocks", this.unlocks);
-        return map;
+    public Integer getNextLevelXp() {
+        return nextLevelXp;
     }
 
+    public void setNextLevelXp(Integer nextLevelXp) {
+        this.nextLevelXp = nextLevelXp;
+    }
+
+    public Integer getPoints() {
+        return points;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
+    }
+
+    public void increaseLevel() {
+        this.level++;
+        this.points++;
+        this.nextLevelXp = PlayerSave.getNextLevelXpAmount(this.level);
+    }
+
+    public boolean usePoint(Integer cost) {
+        if (this.points < cost)
+            return false;
+        this.points -= cost;
+        return true;
+    }
 }

@@ -3,152 +3,113 @@ package customhardcore.customhardcore.Helpers.Levelling;
 import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Msg;
-import org.bukkit.configuration.file.YamlConfiguration;
+import customhardcore.customhardcore.Helpers.ScoreboardHelper;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.BufferedWriter;
+import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class PlayerSave {
+public class PlayerSave extends FileHandler {
 
     private static final CustomHardcore instance = CustomHardcore.getInstance();
     public static HashMap<UUID, PlayerData> players;
 
-    public static PlayerData getPlayer(Player player) {
-        if (players == null)
-            players = new HashMap<>();
-        if (!players.containsKey(player.getUniqueId())) {
-            PlayerData playerData = getOrCreatePlayerSave(instance.getServer().getPlayer(player.getUniqueId()));
-            addPlayer(player, playerData);
-        }
+    private static String getSaveFileDir(Player player) {
+        return instance.getDataFolder().getAbsolutePath()+"\\PlayerSaves\\"+player.getUniqueId()+".json";
+    }
+
+    public static void initialisePlayer(@Nonnull Player player) {
+        String fileString = getSaveFileDir(player);
+        if (!new File(fileString).exists())
+            createNewSave(fileString, player);
+
+        addPlayer(player, getPlayerSave(fileString));
+    }
+
+    private static void createNewSave(String fileString, Player player) {
+        File playerFile = createFile(fileString);
+        if (playerFile == null)
+            return;
+        PlayerData playerData = new PlayerData(player);
+        if (!writeToFile(playerData, playerFile))
+            Logger.error("Failed to write player data to file");
+    }
+
+    private static PlayerData getPlayerSave(String fileString) {
+        return readFromFile(fileString, PlayerData.class);
+    }
+
+    public static PlayerData getPlayerData(Player player) {
         return players.get(player.getUniqueId());
+    }
+
+    public static void removePlayer(Player player) {
+        save(getPlayerData(player), player);
+        players.remove(player.getUniqueId());
     }
 
     public static void addPlayer(Player player, PlayerData playerData) {
         if (players == null)
             players = new HashMap<>();
-        if (!players.containsKey(player.getUniqueId()))
-            players.put(player.getUniqueId(), playerData);
+        players.put(player.getUniqueId(), playerData);
     }
 
-    public static void removePlayer(Player player) {
+    private static void save(PlayerData playerData, Player player) {
         if (player == null) {
-            Logger.error("WTF HAPPENED?!");
+            Logger.error("Failed to save player file - player is null");
             return;
         }
-        PlayerData playerData = getPlayer(player);
-        if (playerData == null) {
-            Logger.error("Could not remove player data from hashmap on quit");
-            return;
-        }
-        save(playerData);
-        players.remove(playerData.getUuid());
-    }
-
-    public static PlayerData getOrCreatePlayerSave(Player player) {
-        String folderString = instance.getDataFolder().getAbsolutePath()+"/PlayerSaves";
-        if (!new File(folderString).exists()) {
-            if (!new File(folderString).mkdirs()) {
-                Logger.error("getOrCreatePlayerSave - Could not create folder at: " + folderString);
-                return null;
-            }
-        }
-
-        File playerDataFile = new File(String.format("%s\\%s.yml", folderString, player.getUniqueId()));
-        if (!new File(playerDataFile.getAbsolutePath()).exists()) {
-            try {
-                if (!playerDataFile.createNewFile())
-                    Logger.error(String.format("Failed to create player data store for %s (%s)", player.getName(),
-                            player.getUniqueId()));
-
-                PlayerData playerData = new PlayerData(player);
-                YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(playerDataFile);
-                yamlConfiguration.set(player.getName(), playerData);
-                yamlConfiguration.save(playerDataFile);
-            } catch (IOException e) {
-                Logger.error(String.format("Failed to create player data store for %s (%s)", player.getName(),
-                        player.getUniqueId()), e);
-            }
-        }
-
-        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(playerDataFile);
-        PlayerData playerData = yamlConfiguration.getSerializable(player.getName(), PlayerData.class);
-        addPlayer(player, playerData);
-        if (playerData != null)
-            return playerData;
-        Logger.error(String.format("Failed to get player data for %s (%s)", player.getName(), player.getUniqueId()));
-        return null;
+        writeToFile(playerData, new File(getSaveFileDir(player)));
     }
 
     public static PlayerData calculateLevel(Player player) {
-        PlayerData playerData = getOrCreatePlayerSave(player);
+        PlayerData playerData = getPlayerData(player);
         if (playerData == null) {
             Logger.error(String.format("Could not get player data for %s (%s)", player.getName(), player.getUniqueId()));
             return null;
         }
 
-        Long nextLevelXp = getNextLevelXpAmount(playerData.getLevel());
-        if (playerData.getXp() > nextLevelXp) {
+        Integer nextLevelXp = getNextLevelXpAmount(playerData.getLevel());
+        if (playerData.getXp() > nextLevelXp)
             playerData.setLevel(player.getLevel() + 1);
-            save(playerData);
-        }
         return playerData;
     }
 
-    private static void save(PlayerData playerData) {
-        if (playerData == null) {
-            Logger.info("Unable to save player data as the player data is null");
-            return;
-        }
-
-        File saveFile = new File(instance.getDataFolder().getAbsolutePath()+"/PlayerSaves"+playerData.getId());
-        if (!saveFile.exists())
-            playerData = getOrCreatePlayerSave(instance.getServer().getPlayer(playerData.getId()));
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(saveFile))) {
-            new Yaml().dump(playerData, writer);
-        } catch (IOException e) {
-            if (playerData != null)
-                Logger.error(String.format("Failed to save player data for id: %s", playerData.getId()), e);
-            else
-                Logger.error("Failed to save player data", e);
-        }
-    }
-
-    private static Long getNextLevelXpAmount(int level) {
-        //No logic behind this, just a prototype
-        return Math.round((level * 10000) * 1.25);
+    public static Integer getNextLevelXpAmount(int level) {
+        return Math.toIntExact(Math.round((level * 10000) * 1.25));
     }
 
     public static String calculateLevelProgress(String progressBar, PlayerData playerData) {
         int barLength = progressBar.length();
-        Long previousLevel = getNextLevelXpAmount(playerData.getLevel()-1);
-        Long nextLevel = getNextLevelXpAmount(playerData.getLevel());
+        Integer previousLevel = getNextLevelXpAmount(playerData.getLevel()-1);
+        Integer nextLevel = getNextLevelXpAmount(playerData.getLevel());
         long firstCalc = nextLevel - previousLevel;
-
-        long percentage = Math.round(((double) playerData.getXp() / firstCalc) * 100);
-        int progressPoint = Math.round(barLength * percentage);
+        double percentage = ((double) playerData.getXp() / firstCalc);
+        int progressPoint = Math.toIntExact(Math.round(barLength * percentage));
         return insertStringIntoString(progressBar, progressPoint);
     }
 
     private static String insertStringIntoString(String original, int progressPoint) {
         String start = original.substring(0, progressPoint);
         String end = original.substring(progressPoint+1);
-        return String.format("%s%s%s", start, "&4", end);
+        return String.format("%s%s%s", start, "&4&l", end);
     }
 
     public static void addXp(Player player, Integer xp) {
-        PlayerData playerData = getPlayer(player);
-        Msg.send(player, players.size() + "");
+        PlayerData playerData = getPlayerData(player);
         if (playerData == null)
             return;
         playerData.addXp(xp);
+
+        if (playerData.getXp() >= playerData.getNextLevelXp()) {
+            playerData.increaseLevel();
+            Msg.sendGlobal(String.format("%s just reached level %o", player.getName(), playerData.getLevel()));
+        }
         players.replace(player.getUniqueId(), playerData);
+        ScoreboardHelper.createOrUpdatePlayerBoard(player);
     }
 
 }
