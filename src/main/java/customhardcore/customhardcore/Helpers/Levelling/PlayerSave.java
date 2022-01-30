@@ -1,45 +1,53 @@
 package customhardcore.customhardcore.Helpers.Levelling;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Msg;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.yaml.snakeyaml.Yaml;
 
-import javax.annotation.Nonnull;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class PlayerSave {
 
     private static final CustomHardcore instance = CustomHardcore.getInstance();
     public static HashMap<UUID, PlayerData> players;
 
-    public static PlayerData getPlayer(UUID playerId) {
+    public static PlayerData getPlayer(Player player) {
         if (players == null)
             players = new HashMap<>();
-        if (!players.containsKey(playerId)) {
-            PlayerData playerData = getOrCreatePlayerSave(instance.getServer().getPlayer(playerId));
-            addPlayer(playerId, playerData);
+        if (!players.containsKey(player.getUniqueId())) {
+            PlayerData playerData = getOrCreatePlayerSave(instance.getServer().getPlayer(player.getUniqueId()));
+            addPlayer(player, playerData);
         }
-        return players.get(playerId);
+        return players.get(player.getUniqueId());
     }
 
-    public static void addPlayer(UUID playerId, PlayerData playerData) {
+    public static void addPlayer(Player player, PlayerData playerData) {
         if (players == null)
             players = new HashMap<>();
-        if (!players.containsKey(playerId))
-            players.put(playerId, playerData);
+        if (!players.containsKey(player.getUniqueId()))
+            players.put(player.getUniqueId(), playerData);
     }
 
-    public static void removePlayer(UUID playerId) {
-        if (players == null)
-            players = new HashMap<>();
-        players.remove(playerId);
+    public static void removePlayer(Player player) {
+        if (player == null) {
+            Logger.error("WTF HAPPENED?!");
+            return;
+        }
+        PlayerData playerData = getPlayer(player);
+        if (playerData == null) {
+            Logger.error("Could not remove player data from hashmap on quit");
+            return;
+        }
+        save(playerData);
+        players.remove(playerData.getUuid());
     }
 
     public static PlayerData getOrCreatePlayerSave(Player player) {
@@ -51,7 +59,7 @@ public class PlayerSave {
             }
         }
 
-        File playerDataFile = new File(String.format("%s\\%s.json", folderString, player.getUniqueId()));
+        File playerDataFile = new File(String.format("%s\\%s.yml", folderString, player.getUniqueId()));
         if (!new File(playerDataFile.getAbsolutePath()).exists()) {
             try {
                 if (!playerDataFile.createNewFile())
@@ -59,34 +67,22 @@ public class PlayerSave {
                             player.getUniqueId()));
 
                 PlayerData playerData = new PlayerData(player);
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(playerDataFile))) {
-                    String json = serializeToJson(playerData);
-                    if (json == null) {
-                        Logger.error("Failed to serialize json to save file");
-                        return null;
-                    }
-                    writer.write(json);
-                }
+                YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(playerDataFile);
+                yamlConfiguration.set(player.getName(), playerData);
+                yamlConfiguration.save(playerDataFile);
             } catch (IOException e) {
                 Logger.error(String.format("Failed to create player data store for %s (%s)", player.getName(),
                         player.getUniqueId()), e);
             }
         }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(playerDataFile))) {
-            String values = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-
-            //Load data from json
-            PlayerData playerData = deserializeFromJson(values);
-            addPlayer(player.getUniqueId(), playerData);
-            if (playerData != null)
-                return playerData;
-            Logger.error(String.format("Failed to get player data for %s (%s)", player.getName(), player.getUniqueId()));
-            return null;
-        } catch (IOException e) {
-            Logger.error(String.format("Error when getting player data for %s (%s)", player.getName(), player.getUniqueId()));
-            return null;
-        }
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(playerDataFile);
+        PlayerData playerData = yamlConfiguration.getSerializable(player.getName(), PlayerData.class);
+        addPlayer(player, playerData);
+        if (playerData != null)
+            return playerData;
+        Logger.error(String.format("Failed to get player data for %s (%s)", player.getName(), player.getUniqueId()));
+        return null;
     }
 
     public static PlayerData calculateLevel(Player player) {
@@ -115,12 +111,7 @@ public class PlayerSave {
             playerData = getOrCreatePlayerSave(instance.getServer().getPlayer(playerData.getId()));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(saveFile))) {
-            String json = serializeToJson(Objects.requireNonNull(playerData));
-            if (json == null) {
-                Logger.error("Failed to serialize player data to json save");
-                return;
-            }
-            writer.write(json);
+            new Yaml().dump(playerData, writer);
         } catch (IOException e) {
             if (playerData != null)
                 Logger.error(String.format("Failed to save player data for id: %s", playerData.getId()), e);
@@ -131,27 +122,7 @@ public class PlayerSave {
 
     private static Long getNextLevelXpAmount(int level) {
         //No logic behind this, just a prototype
-        return Math.round((level * 1000) * 1.25);
-    }
-
-    private static String serializeToJson(@Nonnull PlayerData playerData) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(playerData);
-        } catch (JsonProcessingException e) {
-            Logger.error("PlayerSave failed to serialize player data to string", e);
-            return null;
-        }
-    }
-
-    private static PlayerData deserializeFromJson(String values) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(values, PlayerData.class);
-        } catch (JsonProcessingException e) {
-            Logger.error("PlayerSave failed to deserialize player data");
-            return null;
-        }
+        return Math.round((level * 10000) * 1.25);
     }
 
     public static String calculateLevelProgress(String progressBar, PlayerData playerData) {
@@ -162,13 +133,22 @@ public class PlayerSave {
 
         long percentage = Math.round(((double) playerData.getXp() / firstCalc) * 100);
         int progressPoint = Math.round(barLength * percentage);
-        return insertStringIntoString(progressBar, "&4", progressPoint);
+        return insertStringIntoString(progressBar, progressPoint);
     }
 
-    private static String insertStringIntoString(String original, String insert, int progressPoint) {
+    private static String insertStringIntoString(String original, int progressPoint) {
         String start = original.substring(0, progressPoint);
         String end = original.substring(progressPoint+1);
-        return String.format("%s%s%s", start, insert, end);
+        return String.format("%s%s%s", start, "&4", end);
+    }
+
+    public static void addXp(Player player, Integer xp) {
+        PlayerData playerData = getPlayer(player);
+        Msg.send(player, players.size() + "");
+        if (playerData == null)
+            return;
+        playerData.addXp(xp);
+        players.replace(player.getUniqueId(), playerData);
     }
 
 }

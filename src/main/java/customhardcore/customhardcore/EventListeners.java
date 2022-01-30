@@ -10,6 +10,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -68,7 +69,7 @@ public class EventListeners implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         System.out.println("Removing board for " + event.getPlayer().getName());
-//        PlayerSave.removePlayer(event.getPlayer().getUniqueId());
+        PlayerSave.removePlayer(event.getPlayer());
         ScoreboardHelper.removeBoard(event.getPlayer());
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 10L);
@@ -118,7 +119,12 @@ public class EventListeners implements Listener {
                     UIHelper.updateInventoryUI(player, event.getInventory());
                 });
         }
+    }
 
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        PlayerSave.addXp(player, 1);
     }
 
 }

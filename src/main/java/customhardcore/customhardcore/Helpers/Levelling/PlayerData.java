@@ -1,23 +1,22 @@
 package customhardcore.customhardcore.Helpers.Levelling;
 
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import javax.annotation.Nonnull;
+import java.util.*;
 
-public class PlayerData implements Serializable {
+public class PlayerData implements ConfigurationSerializable {
 
-    private UUID id;
+    private String id;
 
     private Integer level;
 
-    private Long xp;
+    private Integer xp;
 
-    private List<Long> unlocks;
+    private List<Integer> unlocks;
 
-    public PlayerData(UUID id, Integer level, Long xp, List<Long> unlocks) {
+    public PlayerData(String id, Integer level, Integer xp, List<Integer> unlocks) {
         this.id = id;
         this.level = level;
         this.xp = xp;
@@ -25,17 +24,30 @@ public class PlayerData implements Serializable {
     }
 
     public PlayerData(Player player) {
-        this.id = player.getUniqueId();
-        this.xp = 0L;
+        this.id = player.getUniqueId().toString();
+        this.xp = 0;
         this.level = 0;
         this.unlocks = new ArrayList<>();
     }
 
-    public UUID getId() {
+    public PlayerData() {
+    }
+
+    public PlayerData(Map<String, Object> map) {
+        this.id = (String) map.get("id");
+        this.xp = (Integer) map.get("xp");
+        this.level = (Integer) map.get("level");
+        List<Integer> unlocks = new ArrayList<>();
+        if (map.get("unlocks") instanceof List)
+            unlocks = (List<Integer>) map.get("unlocks");
+        this.unlocks = unlocks;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -47,29 +59,53 @@ public class PlayerData implements Serializable {
         this.level = level;
     }
 
-    public Long getXp() {
+    public Integer getXp() {
         return xp;
     }
 
-    public void setXp(Long xp) {
+    public void setXp(Integer xp) {
         this.xp = xp;
     }
 
-    public List<Long> getUnlocks() {
+    public void addXp(Integer xp) {
+        this.xp = (this.xp + xp);
+    }
+
+    public List<Integer> getUnlocks() {
         if (unlocks == null)
             return new ArrayList<>();
         return unlocks;
     }
 
-    public void addUnlock(Long unlock) {
+    public void addUnlock(Integer unlock) {
         if (unlocks == null)
             this.unlocks = new ArrayList<>();
         unlocks.add(unlock);
     }
 
-    public void removeUnlock(Long unlock) {
+    public void removeUnlock(Integer unlock) {
         if (unlocks == null)
             this.unlocks = new ArrayList<>();
         unlocks.remove(unlock);
     }
+
+    public UUID getUuid() {
+        return UUID.fromString(this.id);
+    }
+
+    public void setUnlocks(List<Integer> unlocks) {
+        this.unlocks = unlocks;
+    }
+
+    @Override
+    @Nonnull
+    public Map<String, Object> serialize() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("id", this.id);
+        map.put("xp", this.xp);
+        map.put("level", this.level);
+        map.put("unlocks", this.unlocks);
+        return map;
+    }
+
 }

@@ -20,11 +20,7 @@ public class ScoreboardHelper {
                 ChatColor.translateAlternateColorCodes('&', "&3&lCustom&bHardcore"));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-//        Score score = objective.getScore("&2" + PlayerSave.calculateLevelProgress(
-//                "||||||||||||||||||||", PlayerSave.getPlayer(player.getUniqueId())));
-//        score.setScore(1);
-
-        int scorePos = 2;
+        int scorePos = 0;
         for (Player plyr : Bukkit.getServer().getOnlinePlayers()) {
             Score plyrScore = objective.getScore(ChatColor.translateAlternateColorCodes('&',
                     String.format("&6%s &f&l%o&4☠ &d&l%s&4❤&a", plyr.getName(),
@@ -33,6 +29,12 @@ public class ScoreboardHelper {
 
             scorePos++;
         }
+
+//        Score score = objective.getScore(
+//                ChatColor.translateAlternateColorCodes('&',
+//                        PlayerSave.calculateLevelProgress("&l ||||||||||||||||||||||||||||||||||||||||",
+//                                PlayerSave.getPlayer(player))));
+//        score.setScore(scorePos);
 
         player.setScoreboard(board);
     }
