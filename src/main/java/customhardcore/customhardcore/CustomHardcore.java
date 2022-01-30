@@ -1,11 +1,12 @@
 package customhardcore.customhardcore;
 
+import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Misc;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
+import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,12 +33,13 @@ public final class CustomHardcore extends JavaPlugin {
 
         if (Bukkit.getOnlinePlayers().size() > 0 && ConfigurationHelper.isMaxDeathsEnabled())
             for (Player player : Bukkit.getOnlinePlayers())
+                if (PlayerSpecificSettings.getPlayerSettings(player).getSettings().get(Settings.TOGGLE_SCOREBOARD))
                 ScoreboardHelper.createOrUpdatePlayerBoard(player);
     }
 
     private void enableCommands() {
         List<String> commands = Arrays.asList("get_player_deaths","set_max_deaths","set_death_counter","open_config",
-                "points_shop");
+                "points_shop","settings");
         commands.forEach(command -> Objects.requireNonNull(getCommand(command)).setExecutor(new Commands()));
     }
 

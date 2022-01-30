@@ -1,5 +1,8 @@
-package customhardcore.customhardcore.Helpers.UI;
+package customhardcore.customhardcore.UI;
 
+import customhardcore.customhardcore.Enums.InvUI;
+import customhardcore.customhardcore.Enums.Settings;
+import customhardcore.customhardcore.Objects.ShopItem;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
 import org.bukkit.*;
@@ -11,25 +14,40 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class UIHelper {
 
-    public static void createInventoryUI(Player player, Enums.InvUI invUI) {
+    public static void createInventoryUI(Player player, InvUI invUI) {
         Inventory inventory = Bukkit.createInventory(player, 36, invUI.title);
         invUI.fillInventory(inventory, player);
     }
 
     public static void addBooleanItem(Inventory inventory, ConfigurationHelper.ConfigurationValues configValue,
-                                       Enums.InvUI invUI) {
+                                       InvUI invUI) {
         boolean isSet = ConfigurationHelper.getConfig().getBoolean(configValue.name());
         ItemStack item = createItem(configValue.getDisplayName(), isSet, null, invUI);
         if (item == null) return;
         inventory.addItem(item);
     }
 
+    public static void addBooleanSettingItem(Inventory inventory, Settings setting, Boolean bool) {
+        ItemStack item = new ItemStack(bool ? Material.GREEN_CONCRETE : Material.RED_CONCRETE);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            Logger.error("Could not create player setting - meta null");
+            return;
+        }
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', setting.getDisplayName()));
+        item.setItemMeta(meta);
+        inventory.addItem(item);
+    }
+
     public static void addLocationItem(Inventory inventory, ConfigurationHelper.ConfigurationValues configValue,
-                                        Enums.InvUI invUI) {
+                                        InvUI invUI) {
         boolean isSet = ConfigurationHelper.getConfig().isSet(configValue.name());
         Location location = ConfigurationHelper.getConfig().getLocation(configValue.name());
         String vectorString = "";
@@ -45,7 +63,7 @@ public class UIHelper {
         inventory.addItem(item);
     }
 
-    public static void addShopItem(Inventory inventory, String key, Enums.ShopItem item) {
+    public static void addShopItem(Inventory inventory, String key, ShopItem item) {
         ItemStack itemStack = new ItemStack(item.getMaterial());
         ItemMeta meta = itemStack.getItemMeta();
         if (meta == null)
@@ -59,7 +77,7 @@ public class UIHelper {
         inventory.addItem(itemStack);
     }
 
-    public static void addKey(Inventory inventory, Enums.InvUI invUI) {
+    public static void addKey(Inventory inventory, InvUI invUI) {
         ItemStack set = createItem("SET", true, null, invUI);
         ItemStack notSet = createItem("NOT SET", false, null, invUI);
 
@@ -69,7 +87,7 @@ public class UIHelper {
         inventory.setItem(inventory.getSize()-2, set);
     }
 
-    private static ItemStack createItem(String name, boolean isSet, @Nullable String currentValue, Enums.InvUI invUI) {
+    private static ItemStack createItem(String name, boolean isSet, @Nullable String currentValue, InvUI invUI) {
         if (name == null) {
             Logger.error("Cannot create item with null name");
             return null;
@@ -94,5 +112,4 @@ public class UIHelper {
         item.setItemMeta(meta);
         return item;
     }
-
 }

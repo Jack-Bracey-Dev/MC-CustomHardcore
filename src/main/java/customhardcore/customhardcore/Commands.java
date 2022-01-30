@@ -1,8 +1,13 @@
 package customhardcore.customhardcore;
 
-import customhardcore.customhardcore.Helpers.*;
-import customhardcore.customhardcore.Helpers.UI.Enums;
-import customhardcore.customhardcore.Helpers.UI.UIHelper;
+import customhardcore.customhardcore.Enums.InvUI;
+import customhardcore.customhardcore.Enums.Settings;
+import customhardcore.customhardcore.Helpers.ConfigurationHelper;
+import customhardcore.customhardcore.Helpers.Msg;
+import customhardcore.customhardcore.Helpers.PlayerHelper;
+import customhardcore.customhardcore.Helpers.ScoreboardHelper;
+import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
+import customhardcore.customhardcore.UI.UIHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.command.Command;
@@ -29,27 +34,22 @@ public class Commands implements CommandExecutor {
                 setPlayerDeaths(sender, args);
                 break;
             case "open_config":
-                openConfigurationUI(sender);
+                openUI(sender, InvUI.CONFIGURATION);
                 break;
             case "points_shop":
-                openShopUI(sender);
+                openUI(sender, InvUI.SHOP);
                 break;
+            case "settings":
+                openUI(sender, InvUI.SETTINGS);
         }
         return true;
     }
 
-    private void openShopUI(CommandSender sender) {
+    private void openUI(CommandSender sender, InvUI invUI) {
         if (!(sender instanceof Player)) return;
         Player player = (Player) sender;
 
-        UIHelper.createInventoryUI(player, Enums.InvUI.SHOP);
-    }
-
-    private void openConfigurationUI(CommandSender sender) {
-        if (!(sender instanceof Player)) return;
-        Player player = (Player) sender;
-
-        UIHelper.createInventoryUI(player, Enums.InvUI.CONFIGURATION);
+        UIHelper.createInventoryUI(player, invUI);
     }
 
     private void setPlayerDeaths(CommandSender sender, String[] args) {
@@ -69,7 +69,8 @@ public class Commands implements CommandExecutor {
                 target.getName(),
                 Integer.parseInt(args[1])), "&3");
 
-        if (ConfigurationHelper.isMaxDeathsEnabled())
+        if (ConfigurationHelper.isMaxDeathsEnabled() && PlayerSpecificSettings.getPlayerSettings(target)
+                .getSettings().get(Settings.TOGGLE_SCOREBOARD))
             ScoreboardHelper.updatePlayerBoards();
     }
 

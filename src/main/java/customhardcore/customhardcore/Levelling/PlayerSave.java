@@ -1,6 +1,7 @@
-package customhardcore.customhardcore.Helpers.Levelling;
+package customhardcore.customhardcore.Levelling;
 
 import customhardcore.customhardcore.CustomHardcore;
+import customhardcore.customhardcore.Generic.FileHandler;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Msg;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
@@ -16,12 +17,8 @@ public class PlayerSave extends FileHandler {
     private static final CustomHardcore instance = CustomHardcore.getInstance();
     public static HashMap<UUID, PlayerData> players;
 
-    private static String getSaveFileDir(Player player) {
-        return instance.getDataFolder().getAbsolutePath()+"\\PlayerSaves\\"+player.getUniqueId()+".json";
-    }
-
     public static void initialisePlayer(@Nonnull Player player) {
-        String fileString = getSaveFileDir(player);
+        String fileString = getSaveFileDir(instance, player, "PlayerSaves");
         if (!new File(fileString).exists())
             createNewSave(fileString, player);
 
@@ -61,7 +58,7 @@ public class PlayerSave extends FileHandler {
             Logger.error("Failed to save player file - player is null");
             return;
         }
-        writeToFile(playerData, new File(getSaveFileDir(player)));
+        writeToFile(playerData, new File(getSaveFileDir(instance, player, "PlayerSaves")));
     }
 
     public static PlayerData calculateLevel(Player player) {

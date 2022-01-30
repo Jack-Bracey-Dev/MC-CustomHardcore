@@ -1,4 +1,4 @@
-package customhardcore.customhardcore.Helpers.Levelling;
+package customhardcore.customhardcore.Levelling;
 
 import org.bukkit.entity.Player;
 

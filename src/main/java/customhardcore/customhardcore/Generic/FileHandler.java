@@ -1,18 +1,36 @@
-package customhardcore.customhardcore.Helpers.Levelling;
+package customhardcore.customhardcore.Generic;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Helpers.Logger;
+import org.bukkit.entity.Player;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class FileHandler {
+
+    public static String getSaveFileDir(CustomHardcore instance, Player player, String folderName) {
+        return instance.getDataFolder().getAbsolutePath()+"\\"+folderName+"\\"+player.getUniqueId()+".json";
+    }
+
+    public static String getSaveFolder(String saveFileDir) {
+        if (saveFileDir == null || !saveFileDir.contains("\\"))
+            return null;
+        return saveFileDir.substring(0, saveFileDir.lastIndexOf("\\"));
+    }
 
     public static File createFile(String directory) {
         try {
             File file = new File(directory);
             if (!file.exists()) {
+                String folder = getSaveFolder(file.getAbsolutePath());
+                Logger.info("Attempting to create folder: " + folder);
+                Files.createDirectories(Paths.get(folder));
+
                 if (!file.createNewFile()) {
                     Logger.error("Failed to create new file: " + directory);
                     return null;

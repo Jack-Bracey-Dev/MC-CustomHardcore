@@ -1,7 +1,7 @@
 package customhardcore.customhardcore.Helpers;
 
-import customhardcore.customhardcore.Helpers.Levelling.PlayerData;
-import customhardcore.customhardcore.Helpers.Levelling.PlayerSave;
+import customhardcore.customhardcore.Levelling.PlayerSave;
+import customhardcore.customhardcore.Levelling.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Statistic;

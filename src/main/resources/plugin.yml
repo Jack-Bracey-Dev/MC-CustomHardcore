@@ -34,6 +34,14 @@ commands:
   points_shop:
     description: Opens the points shop UI
     usage: /points_shop
+    permission: CustomHardcore.points_shop
+    permission-message: You don't have permission to use that
     aliases:
       - ps
       - shop
+
+  settings:
+    description: Opens player settings UI
+    usage: /settings
+    permission: CustomHardcore.settings
+    permission-message: You don't have permission to use that
