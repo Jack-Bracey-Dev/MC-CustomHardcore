@@ -1,6 +1,8 @@
 package customhardcore.customhardcore;
 
 import customhardcore.customhardcore.Helpers.*;
+import customhardcore.customhardcore.Helpers.UI.Enums;
+import customhardcore.customhardcore.Helpers.UI.UIHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.command.Command;
@@ -29,15 +31,25 @@ public class Commands implements CommandExecutor {
             case "open_config":
                 openConfigurationUI(sender);
                 break;
+            case "points_shop":
+                openShopUI(sender);
+                break;
         }
         return true;
+    }
+
+    private void openShopUI(CommandSender sender) {
+        if (!(sender instanceof Player)) return;
+        Player player = (Player) sender;
+
+        UIHelper.createInventoryUI(player, Enums.InvUI.SHOP);
     }
 
     private void openConfigurationUI(CommandSender sender) {
         if (!(sender instanceof Player)) return;
         Player player = (Player) sender;
 
-        UIHelper.createInventoryUI(player);
+        UIHelper.createInventoryUI(player, Enums.InvUI.CONFIGURATION);
     }
 
     private void setPlayerDeaths(CommandSender sender, String[] args) {

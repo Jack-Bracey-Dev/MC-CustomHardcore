@@ -113,16 +113,15 @@ public class PlayerData implements Serializable {
         this.points = points;
     }
 
+    public void usePoint(Integer cost) {
+        if (this.points < cost)
+            return;
+        this.points -= cost;
+    }
+
     public void increaseLevel() {
         this.level++;
         this.points++;
         this.nextLevelXp = PlayerSave.getNextLevelXpAmount(this.level);
-    }
-
-    public boolean usePoint(Integer cost) {
-        if (this.points < cost)
-            return false;
-        this.points -= cost;
-        return true;
     }
 }

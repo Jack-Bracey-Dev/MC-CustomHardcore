@@ -4,7 +4,6 @@ import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Msg;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
@@ -88,6 +87,8 @@ public class PlayerSave extends FileHandler {
         Integer nextLevel = getNextLevelXpAmount(playerData.getLevel());
         long firstCalc = nextLevel - previousLevel;
         double percentage = ((double) playerData.getXp() / firstCalc);
+        if (percentage == 0)
+            return insertStringIntoString(progressBar, 0);
         int progressPoint = Math.toIntExact(Math.round(barLength * percentage));
         return insertStringIntoString(progressBar, progressPoint);
     }
@@ -110,6 +111,11 @@ public class PlayerSave extends FileHandler {
         }
         players.replace(player.getUniqueId(), playerData);
         ScoreboardHelper.createOrUpdatePlayerBoard(player);
+    }
+
+    public static void spendPoint(Player player, Integer cost) {
+        PlayerData playerData = getPlayerData(player);
+        playerData.usePoint(cost);
     }
 
 }

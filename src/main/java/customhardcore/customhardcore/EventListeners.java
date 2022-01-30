@@ -2,6 +2,8 @@ package customhardcore.customhardcore;
 
 import customhardcore.customhardcore.Helpers.*;
 import customhardcore.customhardcore.Helpers.Levelling.PlayerSave;
+import customhardcore.customhardcore.Helpers.UI.InventoryEvents;
+import customhardcore.customhardcore.Helpers.UI.UIHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,7 +23,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -89,42 +90,10 @@ public class EventListeners implements Listener {
 
     @EventHandler
     public void onInventoryItemTouched(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equalsIgnoreCase("Configuration")) return;
-
-        event.setCancelled(true);
-        if (event.getCurrentItem() == null || event.getCurrentItem().getItemMeta() == null)
-            return;
-
-        if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("SET") ||
-                event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("NOT SET")) return;
-
-        String name = event.getCurrentItem().getItemMeta().getPersistentDataContainer()
-                .get(Objects.requireNonNull(NamespacedKey.fromString(UIHelper.SETTING_META_HEADER)),
-                        PersistentDataType.STRING);
-
-        if (name == null) {
-            Logger.error("Inventory item doesn't have metadata for name");
-            return;
-        }
-
-        ConfigurationHelper.ConfigurationValues value = ConfigurationHelper.ConfigurationValues
-                .getConfigValueByString(name);
-
-        if (value == null) {
-            Logger.error("Could not get configuration value from onInventoryItemTouched");
-            return;
-        }
-
-        value.onChange(event.getWhoClicked() instanceof Player ? (Player) event.getWhoClicked() : null);
-        if (event.getInventory().getViewers().size() > 0) {
-            List<HumanEntity> entities = event.getInventory().getViewers().stream()
-                    .filter(entity -> (entity instanceof Player)).collect(Collectors.toList());
-            if (entities.size() > 0)
-                entities.forEach(entity -> {
-                    Player player = (Player) entity;
-                    UIHelper.updateInventoryUI(player, event.getInventory());
-                });
-        }
+        if (event.getView().getTitle().equalsIgnoreCase("Configuration"))
+            InventoryEvents.configurationEvent(event);
+        if (event.getView().getTitle().equalsIgnoreCase("Point Shop"))
+            InventoryEvents.shopEvent(event);
     }
 
     @EventHandler

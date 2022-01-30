@@ -1,5 +1,7 @@
-package customhardcore.customhardcore.Helpers;
+package customhardcore.customhardcore.Helpers.UI;
 
+import customhardcore.customhardcore.Helpers.ConfigurationHelper;
+import customhardcore.customhardcore.Helpers.Logger;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -9,38 +11,25 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class UIHelper {
 
-    public static final String SETTING_META_HEADER = "settings_meta";
-
-    public static void createInventoryUI(Player player) {
-        Inventory inventory = Bukkit.createInventory(player, 36, "Configuration");
-        updateInventoryUI(player, inventory);
+    public static void createInventoryUI(Player player, Enums.InvUI invUI) {
+        Inventory inventory = Bukkit.createInventory(player, 36, invUI.title);
+        invUI.fillInventory(inventory, player);
     }
 
-    public static void updateInventoryUI(Player player, Inventory inventory) {
-        inventory.clear();
-        addBooleanItem(inventory, ConfigurationHelper.ConfigurationValues.ENABLE_MAX_DEATHS);
-        addBooleanItem(inventory, ConfigurationHelper.ConfigurationValues.ENABLE_TELEPORT_ON_DEATH);
-        addLocationItem(inventory, ConfigurationHelper.ConfigurationValues.SIGN_LOCATION);
-        addLocationItem(inventory, ConfigurationHelper.ConfigurationValues.DEATH_LOCATION);
-
-        addKey(inventory);
-        player.openInventory(inventory);
-    }
-
-    private static void addBooleanItem(Inventory inventory, ConfigurationHelper.ConfigurationValues configValue) {
+    public static void addBooleanItem(Inventory inventory, ConfigurationHelper.ConfigurationValues configValue,
+                                       Enums.InvUI invUI) {
         boolean isSet = ConfigurationHelper.getConfig().getBoolean(configValue.name());
-        ItemStack item = createItem(configValue.getDisplayName(), isSet, null);
+        ItemStack item = createItem(configValue.getDisplayName(), isSet, null, invUI);
         if (item == null) return;
         inventory.addItem(item);
     }
 
-    private static void addLocationItem(Inventory inventory, ConfigurationHelper.ConfigurationValues configValue) {
+    public static void addLocationItem(Inventory inventory, ConfigurationHelper.ConfigurationValues configValue,
+                                        Enums.InvUI invUI) {
         boolean isSet = ConfigurationHelper.getConfig().isSet(configValue.name());
         Location location = ConfigurationHelper.getConfig().getLocation(configValue.name());
         String vectorString = "";
@@ -51,14 +40,28 @@ public class UIHelper {
             vector.setZ(Math.round(vector.getZ()));
             vectorString = String.format("%s %s %s", vector.getX(), vector.getY(), vector.getZ());
         }
-        ItemStack item = createItem(configValue.getDisplayName(), isSet, vectorString);
+        ItemStack item = createItem(configValue.getDisplayName(), isSet, vectorString, invUI);
         if (item == null) return;
         inventory.addItem(item);
     }
 
-    private static void addKey(Inventory inventory) {
-        ItemStack set = createItem("SET", true, null);
-        ItemStack notSet = createItem("NOT SET", false, null);
+    public static void addShopItem(Inventory inventory, String key, Enums.ShopItem item) {
+        ItemStack itemStack = new ItemStack(item.getMaterial());
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta == null)
+            return;
+        meta.setDisplayName(item.getDisplayName());
+        meta.setLore(Collections.singletonList(String.format("Price: %o points", item.getPrice())));
+
+        meta.getPersistentDataContainer().set(Objects.requireNonNull(NamespacedKey.fromString(key)),
+                PersistentDataType.STRING, item.getDisplayName());
+        itemStack.setItemMeta(meta);
+        inventory.addItem(itemStack);
+    }
+
+    public static void addKey(Inventory inventory, Enums.InvUI invUI) {
+        ItemStack set = createItem("SET", true, null, invUI);
+        ItemStack notSet = createItem("NOT SET", false, null, invUI);
 
         if (set == null || notSet == null) return;
 
@@ -66,7 +69,7 @@ public class UIHelper {
         inventory.setItem(inventory.getSize()-2, set);
     }
 
-    private static ItemStack createItem(String name, boolean isSet, @Nullable String currentValue) {
+    private static ItemStack createItem(String name, boolean isSet, @Nullable String currentValue, Enums.InvUI invUI) {
         if (name == null) {
             Logger.error("Cannot create item with null name");
             return null;
@@ -76,7 +79,7 @@ public class UIHelper {
         ItemMeta meta = item.getItemMeta();
 
         if (meta == null) return null;
-        meta.getPersistentDataContainer().set(Objects.requireNonNull(NamespacedKey.fromString(SETTING_META_HEADER)),
+        meta.getPersistentDataContainer().set(Objects.requireNonNull(NamespacedKey.fromString(invUI.metaHeader)),
                 PersistentDataType.STRING, name);
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',
                 (isSet ? "&a" : "&c") + name));
