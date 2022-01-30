@@ -1,6 +1,7 @@
 package customhardcore.customhardcore;
 
 import customhardcore.customhardcore.Helpers.*;
+import customhardcore.customhardcore.Helpers.Levelling.PlayerSave;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,6 +10,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -19,6 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,6 +32,11 @@ public class EventListeners implements Listener {
     public void onPlayerDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player)
             PlayerHelper.onDeathEvent(((Player) event.getEntity()));
+
+        if (event.getEntity().getKiller() != null) {
+            Player killer = event.getEntity().getKiller();
+            PlayerSave.addXp(killer, event.getDroppedExp());
+        }
     }
 
     @EventHandler
@@ -60,6 +68,7 @@ public class EventListeners implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        PlayerSave.initialisePlayer(event.getPlayer());
         if (ConfigurationHelper.isMaxDeathsEnabled())
             ScoreboardHelper.updatePlayerBoards();
     }
@@ -67,6 +76,7 @@ public class EventListeners implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         System.out.println("Removing board for " + event.getPlayer().getName());
+        PlayerSave.removePlayer(event.getPlayer());
         ScoreboardHelper.removeBoard(event.getPlayer());
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 10L);
@@ -117,7 +127,12 @@ public class EventListeners implements Listener {
                     UIHelper.updateInventoryUI(player, event.getInventory());
                 });
         }
+    }
 
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        PlayerSave.addXp(player, Math.round(event.getBlock().getType().getHardness()));
     }
 
 }

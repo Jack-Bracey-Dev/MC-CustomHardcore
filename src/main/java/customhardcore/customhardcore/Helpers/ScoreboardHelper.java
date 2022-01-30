@@ -1,5 +1,7 @@
 package customhardcore.customhardcore.Helpers;
 
+import customhardcore.customhardcore.Helpers.Levelling.PlayerData;
+import customhardcore.customhardcore.Helpers.Levelling.PlayerSave;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Statistic;
@@ -19,7 +21,7 @@ public class ScoreboardHelper {
                 ChatColor.translateAlternateColorCodes('&', "&3&lCustom&bHardcore"));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        int scorePos = 1;
+        int scorePos = 0;
         for (Player plyr : Bukkit.getServer().getOnlinePlayers()) {
             Score plyrScore = objective.getScore(ChatColor.translateAlternateColorCodes('&',
                     String.format("&6%s &f&l%o&4☠ &d&l%s&4❤&a", plyr.getName(),
@@ -28,6 +30,17 @@ public class ScoreboardHelper {
 
             scorePos++;
         }
+
+        PlayerData playerData = PlayerSave.getPlayerData(player);
+
+        Score score = objective.getScore(
+                ChatColor.translateAlternateColorCodes('&',
+                        "&3&l" + playerData.getLevel() + " " +
+                        "&a&l" +
+                                PlayerSave.calculateLevelProgress("||||||||||||||||||||||||||||||||||||||||",
+                                PlayerSave.getPlayerData(player)) +
+                                "&3&l " + (playerData.getLevel()+1)));
+        score.setScore(scorePos);
 
         player.setScoreboard(board);
     }

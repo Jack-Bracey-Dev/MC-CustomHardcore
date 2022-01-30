@@ -1,6 +1,7 @@
 package customhardcore.customhardcore;
 
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
+import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Misc;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
 import org.bukkit.Bukkit;
@@ -19,9 +20,9 @@ public final class CustomHardcore extends JavaPlugin {
     public void onEnable() {
         instance = this;
         if (getServer().isHardcore())
-            getServer().getConsoleSender().sendMessage(ChatColor.RED + "CustomHardcore should not be used on hardcore servers");
+            Logger.info("&4should not be used on hardcore servers");
         else
-            getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "CustomHardcore started");
+            Logger.info("&astarted");
 
         ConfigurationHelper.checkAndSetConfig();
         Misc.createSigns(getConfig().getLocation(ConfigurationHelper.ConfigurationValues.SIGN_LOCATION.name()));
