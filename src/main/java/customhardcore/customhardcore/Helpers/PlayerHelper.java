@@ -50,6 +50,7 @@ public class PlayerHelper {
         PlayerHelper.dropAllItems(player);
         player.setHealth(20);
         player.setSaturation(20);
+        player.setFoodLevel(20);
 
         if (ConfigurationHelper.getConfig().getBoolean(ConfigurationHelper.ConfigurationValues.ENABLE_TELEPORT_ON_DEATH.name())) {
             Location location = ConfigurationHelper.getConfig().getLocation(ConfigurationHelper.ConfigurationValues.DEATH_LOCATION.name());
