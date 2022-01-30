@@ -30,3 +30,10 @@ commands:
     usage: /open_config
     permission: CustomHardcore.open_config
     permission-message: You don't have permission to use that
+
+  points_shop:
+    description: Opens the points shop UI
+    usage: /points_shop
+    aliases:
+      - ps
+      - shop
