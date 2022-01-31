@@ -1,5 +1,6 @@
 package customhardcore.customhardcore.Levelling;
 
+import customhardcore.customhardcore.Enums.Unlocks;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
@@ -19,10 +20,10 @@ public class PlayerData implements Serializable {
 
     private Integer points;
 
-    private List<Integer> unlocks;
+    private List<Unlocks> unlocks;
 
     public PlayerData(String id, Integer level, Integer xp, Integer nextLevelXp, Integer points,
-                      List<Integer> unlocks) {
+                      List<Unlocks> unlocks) {
         this.id = id;
         this.level = level;
         this.xp = xp;
@@ -71,19 +72,19 @@ public class PlayerData implements Serializable {
         this.xp = (this.xp + xp);
     }
 
-    public List<Integer> getUnlocks() {
+    public List<Unlocks> getUnlocks() {
         if (unlocks == null)
             return new ArrayList<>();
         return unlocks;
     }
 
-    public void addUnlock(Integer unlock) {
+    public void addUnlock(Unlocks unlock) {
         if (unlocks == null)
             this.unlocks = new ArrayList<>();
         unlocks.add(unlock);
     }
 
-    public void removeUnlock(Integer unlock) {
+    public void removeUnlock(Unlocks unlock) {
         if (unlocks == null)
             this.unlocks = new ArrayList<>();
         unlocks.remove(unlock);
@@ -93,7 +94,7 @@ public class PlayerData implements Serializable {
         return UUID.fromString(this.id);
     }
 
-    public void setUnlocks(List<Integer> unlocks) {
+    public void setUnlocks(List<Unlocks> unlocks) {
         this.unlocks = unlocks;
     }
 

@@ -1,21 +1,23 @@
 package customhardcore.customhardcore;
 
 import customhardcore.customhardcore.Enums.Settings;
-import customhardcore.customhardcore.Helpers.ConfigurationHelper;
+import customhardcore.customhardcore.Enums.Unlocks;
+import customhardcore.customhardcore.Helpers.*;
+import customhardcore.customhardcore.Levelling.PlayerData;
 import customhardcore.customhardcore.Levelling.PlayerSave;
-import customhardcore.customhardcore.Helpers.Msg;
-import customhardcore.customhardcore.Helpers.PlayerHelper;
-import customhardcore.customhardcore.Helpers.ScoreboardHelper;
 import customhardcore.customhardcore.Objects.PlayerSettings;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
+import customhardcore.customhardcore.SpecialAbilities.SpecialCobbleGen;
 import customhardcore.customhardcore.UI.InventoryEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -25,7 +27,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class EventListeners implements Listener {
 
@@ -106,6 +111,13 @@ public class EventListeners implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         PlayerSave.addXp(player, Math.round(event.getBlock().getType().getHardness()));
+    }
+
+    @EventHandler
+    public void onBlockGen(BlockFormEvent event) {
+        if (event.getNewState().getType().equals(Material.COBBLESTONE))
+            SpecialCobbleGen.generate(event);
+
     }
 
 }

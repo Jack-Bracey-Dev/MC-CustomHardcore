@@ -1,6 +1,7 @@
 package customhardcore.customhardcore.Levelling;
 
 import customhardcore.customhardcore.CustomHardcore;
+import customhardcore.customhardcore.Enums.Unlocks;
 import customhardcore.customhardcore.Generic.FileHandler;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Msg;
@@ -115,4 +116,8 @@ public class PlayerSave extends FileHandler {
         playerData.usePoint(cost);
     }
 
+    public static void giveUnlock(PlayerData playerData, Unlocks unlock) {
+        playerData.addUnlock(unlock);
+        players.replace(playerData.getUuid(), playerData);
+    }
 }
