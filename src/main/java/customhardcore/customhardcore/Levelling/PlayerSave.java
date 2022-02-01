@@ -3,9 +3,11 @@ package customhardcore.customhardcore.Levelling;
 import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Enums.Unlocks;
 import customhardcore.customhardcore.Generic.FileHandler;
+import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Msg;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
@@ -57,6 +59,10 @@ public class PlayerSave extends FileHandler {
         if (players == null)
             players = new HashMap<>();
         players.put(player.getUniqueId(), playerData);
+    }
+
+    public static void replacePlayer(PlayerData playerData) {
+        players.replace(playerData.getUuid(), playerData);
     }
 
     private static void save(PlayerData playerData, Player player) {
@@ -111,8 +117,10 @@ public class PlayerSave extends FileHandler {
         if (playerData.getXp() >= playerData.getNextLevelXp()) {
             playerData.increaseLevel();
             Msg.sendGlobal(String.format("%s just reached level %o", player.getName(), playerData.getLevel()));
+            if (ConfigurationHelper.isMaxDeathsEnabled())
+                ScoreboardHelper.updatePlayerBoards();
         }
-        players.replace(player.getUniqueId(), playerData);
+        replacePlayer(playerData);
         ScoreboardHelper.createOrUpdatePlayerBoard(player);
     }
 
@@ -123,7 +131,7 @@ public class PlayerSave extends FileHandler {
 
     public static void giveUnlock(PlayerData playerData, Unlocks unlock) {
         playerData.addUnlock(unlock);
-        players.replace(playerData.getUuid(), playerData);
+        replacePlayer(playerData);
     }
 
     public static void checkForNewElements() {

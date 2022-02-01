@@ -13,16 +13,16 @@ commands:
     permission: CustomHardcore.get_player_deaths
     permission-message: You don't have permission to use that
 
-  set_max_deaths:
+  set_starting_lives:
     description: Sets the number of deaths before ban
-    usage: /set_max_deaths
-    permission: CustomHardcore.set_max_deaths
+    usage: /set_starting_lives
+    permission: CustomHardcore.set_starting_lives
     permission-message: You don't have permission to use that
 
-  set_death_counter:
-    description: Sets a player's number of deaths
-    usage: /set_death_counter
-    permission: CustomHardcore.set_death_counter
+  set_remaining_lives:
+    description: Sets a player's remaining lives
+    usage: /set_remaining_lives
+    permission: CustomHardcore.set_remaining_lives
     permission-message: You don't have permission to use that
 
   open_config:

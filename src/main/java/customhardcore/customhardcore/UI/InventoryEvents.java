@@ -1,5 +1,6 @@
 package customhardcore.customhardcore.UI;
 
+import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.InvUI;
 import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Enums.ShopItems;
@@ -41,8 +42,7 @@ public class InventoryEvents {
             return;
         }
 
-        ConfigurationHelper.ConfigurationValues value = ConfigurationHelper.ConfigurationValues
-                .getConfigValueByString(name);
+        ConfigurationValues value = ConfigurationValues.getConfigValueByString(name);
 
         if (value == null) {
             Logger.error("Could not get configuration value from onInventoryItemTouched");

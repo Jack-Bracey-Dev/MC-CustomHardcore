@@ -1,6 +1,5 @@
 package customhardcore.customhardcore.Enums;
 
-import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Objects.PlayerSettings;
 import customhardcore.customhardcore.Objects.ShopItem;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
@@ -15,10 +14,10 @@ public enum InvUI {
         @Override
         public void fillInventory(Inventory inventory, Player player) {
             inventory.clear();
-            UIHelper.addBooleanItem(inventory, ConfigurationHelper.ConfigurationValues.ENABLE_MAX_DEATHS, this);
-            UIHelper.addBooleanItem(inventory, ConfigurationHelper.ConfigurationValues.ENABLE_TELEPORT_ON_DEATH, this);
-            UIHelper.addLocationItem(inventory, ConfigurationHelper.ConfigurationValues.SIGN_LOCATION, this);
-            UIHelper.addLocationItem(inventory, ConfigurationHelper.ConfigurationValues.DEATH_LOCATION, this);
+            UIHelper.addBooleanItem(inventory, ConfigurationValues.ENABLE_PLAYER_LIVES, this);
+            UIHelper.addBooleanItem(inventory, ConfigurationValues.ENABLE_TELEPORT_ON_DEATH, this);
+            UIHelper.addLocationItem(inventory, ConfigurationValues.SIGN_LOCATION, this);
+            UIHelper.addLocationItem(inventory, ConfigurationValues.DEATH_LOCATION, this);
 
             UIHelper.addKey(inventory, this);
             player.openInventory(inventory);

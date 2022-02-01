@@ -1,11 +1,14 @@
 package customhardcore.customhardcore;
 
+import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.InvUI;
 import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Msg;
 import customhardcore.customhardcore.Helpers.PlayerHelper;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
+import customhardcore.customhardcore.Levelling.PlayerData;
+import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import customhardcore.customhardcore.UI.UIHelper;
 import org.bukkit.Bukkit;
@@ -27,11 +30,11 @@ public class Commands implements CommandExecutor {
             case "get_player_deaths":
                 getPlayerDeaths(args, sender);
                 break;
-            case "set_max_deaths":
-                setMaxDeaths(sender, args);
+            case "set_starting_lives":
+                setStartingLives(sender, args);
                 break;
-            case "set_death_counter":
-                setPlayerDeaths(sender, args);
+            case "set_remaining_lives":
+                setPlayerRemainingLives(sender, args);
                 break;
             case "open_config":
                 openUI(sender, InvUI.CONFIGURATION);
@@ -52,7 +55,7 @@ public class Commands implements CommandExecutor {
         UIHelper.createInventoryUI(player, invUI);
     }
 
-    private void setPlayerDeaths(CommandSender sender, String[] args) {
+    private void setPlayerRemainingLives(CommandSender sender, String[] args) {
         if (args == null || args.length < 2) {
             Msg.send(sender, "This command requires a username, followed with the number of deaths you want to send",
                     "&4");
@@ -64,8 +67,10 @@ public class Commands implements CommandExecutor {
             return;
         }
 
-        target.setStatistic(Statistic.DEATHS, Integer.parseInt(args[1]));
-        Msg.send(sender, String.format("Successfully set &b%s &3deaths to &b%o",
+        PlayerData playerData = PlayerSave.getPlayerData(target);
+        playerData.setLives(Integer.parseInt(args[1]));
+        PlayerSave.replacePlayer(playerData);
+        Msg.send(sender, String.format("Successfully set &b%s &lives to &b%o",
                 target.getName(),
                 Integer.parseInt(args[1])), "&3");
 
@@ -74,16 +79,15 @@ public class Commands implements CommandExecutor {
             ScoreboardHelper.updatePlayerBoards();
     }
 
-    private void setMaxDeaths(CommandSender sender, @Nullable String[] args) {
+    private void setStartingLives(CommandSender sender, @Nullable String[] args) {
         if (args == null || args.length == 0) {
             Msg.send(sender, "This command requires a number as an argument", "&4");
             return;
         }
-        ConfigurationHelper.getConfig().set(ConfigurationHelper.ConfigurationValues.MAX_DEATHS.name(),
+        ConfigurationHelper.getConfig().set(ConfigurationValues.STARTING_LIVES.name(),
                 Integer.valueOf(args[0]));
         ConfigurationHelper.save();
         Msg.send(sender, "Maximum deaths successfully set to &b" + Integer.valueOf(args[0]), "&3");
-        Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::createOrUpdatePlayerBoard);
     }
 
     private void getPlayerDeaths(String[] args, CommandSender sender) {

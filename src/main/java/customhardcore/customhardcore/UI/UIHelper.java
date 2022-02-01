@@ -1,5 +1,6 @@
 package customhardcore.customhardcore.UI;
 
+import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.InvUI;
 import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Objects.ShopItem;
@@ -26,7 +27,7 @@ public class UIHelper {
         invUI.fillInventory(inventory, player);
     }
 
-    public static void addBooleanItem(Inventory inventory, ConfigurationHelper.ConfigurationValues configValue,
+    public static void addBooleanItem(Inventory inventory, ConfigurationValues configValue,
                                        InvUI invUI) {
         boolean isSet = ConfigurationHelper.getConfig().getBoolean(configValue.name());
         ItemStack item = createItem(configValue.getDisplayName(), isSet, null, invUI);
@@ -46,7 +47,7 @@ public class UIHelper {
         inventory.addItem(item);
     }
 
-    public static void addLocationItem(Inventory inventory, ConfigurationHelper.ConfigurationValues configValue,
+    public static void addLocationItem(Inventory inventory, ConfigurationValues configValue,
                                         InvUI invUI) {
         boolean isSet = ConfigurationHelper.getConfig().isSet(configValue.name());
         Location location = ConfigurationHelper.getConfig().getLocation(configValue.name());

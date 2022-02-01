@@ -1,5 +1,6 @@
 package customhardcore.customhardcore;
 
+import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
@@ -27,7 +28,7 @@ public final class CustomHardcore extends JavaPlugin {
             Logger.info("&astarted");
 
         ConfigurationHelper.checkAndSetConfig();
-        Misc.createSigns(getConfig().getLocation(ConfigurationHelper.ConfigurationValues.SIGN_LOCATION.name()));
+        Misc.createSigns(getConfig().getLocation(ConfigurationValues.SIGN_LOCATION.name()));
 
         Bukkit.getPluginManager().registerEvents(new EventListeners(), this);
         enableCommands();
@@ -41,7 +42,7 @@ public final class CustomHardcore extends JavaPlugin {
     }
 
     private void enableCommands() {
-        List<String> commands = Arrays.asList("get_player_deaths","set_max_deaths","set_death_counter","open_config",
+        List<String> commands = Arrays.asList("get_player_deaths","set_starting_lives","set_remaining_lives","open_config",
                 "points_shop","settings");
         commands.forEach(command -> Objects.requireNonNull(getCommand(command)).setExecutor(new Commands()));
     }

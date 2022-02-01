@@ -1,6 +1,9 @@
 package customhardcore.customhardcore.Helpers;
 
 import customhardcore.customhardcore.CustomHardcore;
+import customhardcore.customhardcore.Enums.ConfigurationValues;
+import customhardcore.customhardcore.Levelling.PlayerData;
+import customhardcore.customhardcore.Levelling.PlayerSave;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,8 +55,8 @@ public class PlayerHelper {
         player.setSaturation(20);
         player.setFoodLevel(20);
 
-        if (ConfigurationHelper.getConfig().getBoolean(ConfigurationHelper.ConfigurationValues.ENABLE_TELEPORT_ON_DEATH.name())) {
-            Location location = ConfigurationHelper.getConfig().getLocation(ConfigurationHelper.ConfigurationValues.DEATH_LOCATION.name());
+        if (ConfigurationHelper.getConfig().getBoolean(ConfigurationValues.ENABLE_TELEPORT_ON_DEATH.name())) {
+            Location location = ConfigurationHelper.getConfig().getLocation(ConfigurationValues.DEATH_LOCATION.name());
             if (location != null)
                 player.teleport(location);
             else
@@ -67,12 +70,16 @@ public class PlayerHelper {
                 player.teleport(Objects.requireNonNull(Bukkit.getWorld("world")).getSpawnLocation());
         }
 
-        if (ConfigurationHelper.getConfig().getBoolean(ConfigurationHelper.ConfigurationValues.ENABLE_MAX_DEATHS.name())) {
+        if (ConfigurationHelper.getBoolean(ConfigurationValues.ENABLE_PLAYER_LIVES)) {
             ScoreboardHelper.createOrUpdatePlayerBoard(player);
-            int maxDeathsAmount = ConfigurationHelper.getConfig().getInt(ConfigurationHelper.ConfigurationValues.MAX_DEATHS.name());
-            if (player.getStatistic(Statistic.DEATHS) >= maxDeathsAmount) {
-                player.kickPlayer("KickBanned by CustomHardcore for too many deaths");
-                PlayerHelper.banPlayer(player, "KickBanned by CustomHardcore for too many deaths");
+            PlayerData playerData = PlayerSave.getPlayerData(player);
+            playerData.removeLife();
+            PlayerSave.replacePlayer(playerData);
+            if (playerData.getLives() <= 0) {
+                playerData = new PlayerData(player);
+                PlayerSave.replacePlayer(playerData);
+                Msg.send(player, "&4&lYou have ran out of lives and so have had your progress reset, " +
+                        "be more careful next time");
             }
         }
 

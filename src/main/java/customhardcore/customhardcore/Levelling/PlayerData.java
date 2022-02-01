@@ -1,6 +1,8 @@
 package customhardcore.customhardcore.Levelling;
 
+import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.Unlocks;
+import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
@@ -22,15 +24,7 @@ public class PlayerData implements Serializable {
 
     private List<Unlocks> unlocks;
 
-    public PlayerData(String id, Integer level, Integer xp, Integer nextLevelXp, Integer points,
-                      List<Unlocks> unlocks) {
-        this.id = id;
-        this.level = level;
-        this.xp = xp;
-        this.nextLevelXp = nextLevelXp;
-        this.points = points;
-        this.unlocks = unlocks;
-    }
+    private Integer lives;
 
     public PlayerData(Player player) {
         this.id = player.getUniqueId().toString();
@@ -39,6 +33,7 @@ public class PlayerData implements Serializable {
         this.points = 0;
         this.nextLevelXp = PlayerSave.getNextLevelXpAmount(1);
         this.unlocks = new ArrayList<>();
+        this.lives = ConfigurationHelper.getInt(ConfigurationValues.STARTING_LIVES);
     }
 
     public PlayerData() {
@@ -114,6 +109,14 @@ public class PlayerData implements Serializable {
         this.points = points;
     }
 
+    public Integer getLives() {
+        return lives;
+    }
+
+    public void setLives(Integer lives) {
+        this.lives = lives;
+    }
+
     public void usePoint(Integer cost) {
         if (this.points < cost)
             return;
@@ -148,8 +151,15 @@ public class PlayerData implements Serializable {
             playerData.setUnlocks(new ArrayList<>());
             hasMissingValues = true;
         }
+        if (playerData.getLives() == null) {
+            playerData.setLives(ConfigurationHelper.getInt(ConfigurationValues.STARTING_LIVES));
+            hasMissingValues = true;
+        }
 
         return hasMissingValues ? playerData : null;
     }
 
+    public void removeLife() {
+        this.lives--;
+    }
 }

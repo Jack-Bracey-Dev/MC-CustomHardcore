@@ -1,7 +1,10 @@
 package customhardcore.customhardcore.Helpers;
 
+import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.Levelling.PlayerData;
+import customhardcore.customhardcore.Objects.PlayerSettings;
+import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Statistic;
@@ -23,9 +26,11 @@ public class ScoreboardHelper {
 
         int scorePos = 0;
         for (Player plyr : Bukkit.getServer().getOnlinePlayers()) {
+            PlayerData playerData = PlayerSave.getPlayerData(player);
             Score plyrScore = objective.getScore(ChatColor.translateAlternateColorCodes('&',
-                    String.format("&6%s &f&l%o&4☠ &d&l%s&4❤&a", plyr.getName(),
-                    plyr.getStatistic(Statistic.DEATHS), Math.round(Math.ceil(plyr.getHealth())))));
+                    String.format("&6%s &f&l%o&4☠ &d&l%s&4❤&a %o⇪", plyr.getName(),
+                    playerData.getLives(), Math.round(Math.ceil(plyr.getHealth())),
+                            playerData.getLevel())));
             plyrScore.setScore(scorePos);
 
             scorePos++;
@@ -73,7 +78,10 @@ public class ScoreboardHelper {
     }
 
     public static void updatePlayerBoards() {
-        Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::updateBoard);
+        Bukkit.getServer().getOnlinePlayers().stream().
+                filter(player -> PlayerSpecificSettings.getPlayerSettings(player)
+                        .getSettings().get(Settings.TOGGLE_SCOREBOARD))
+                .forEach(ScoreboardHelper::updateBoard);
     }
 
 }
