@@ -101,8 +101,6 @@ public class PlayerSave extends FileHandler {
     }
 
     private static String insertStringIntoString(String original, int progressPoint) {
-        if (progressPoint == 0)
-            return original;
         if (progressPoint > original.length())
             progressPoint = original.length();
 
