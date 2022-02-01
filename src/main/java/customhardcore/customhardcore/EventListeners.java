@@ -23,6 +23,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -79,11 +80,11 @@ public class EventListeners implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        PlayerSave.removePlayer(event.getPlayer());
-        PlayerSpecificSettings.removePlayer(event.getPlayer());
-        ScoreboardHelper.removeBoard(event.getPlayer());
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 10L);
+        PlayerHelper.leaveEvent(event);
+    }
+
+    public void onKicked(PlayerKickEvent event) {
+        PlayerHelper.leaveEvent(event);
     }
 
     @EventHandler

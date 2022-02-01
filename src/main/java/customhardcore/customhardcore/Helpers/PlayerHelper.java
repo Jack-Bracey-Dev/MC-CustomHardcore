@@ -4,10 +4,13 @@ import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Levelling.PlayerData;
 import customhardcore.customhardcore.Levelling.PlayerSave;
+import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Arrays;
 import java.util.List;
@@ -88,6 +91,14 @@ public class PlayerHelper {
 
         ScoreboardHelper.updatePlayerBoards();
         
+    }
+
+    public static <T extends PlayerEvent> void leaveEvent(T event) {
+        PlayerSave.removePlayer(event.getPlayer());
+        PlayerSpecificSettings.removePlayer(event.getPlayer());
+        ScoreboardHelper.removeBoard(event.getPlayer());
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 10L);
     }
 
 }

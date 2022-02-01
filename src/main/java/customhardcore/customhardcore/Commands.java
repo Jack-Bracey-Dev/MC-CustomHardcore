@@ -70,7 +70,7 @@ public class Commands implements CommandExecutor {
         PlayerData playerData = PlayerSave.getPlayerData(target);
         playerData.setLives(Integer.parseInt(args[1]));
         PlayerSave.replacePlayer(playerData);
-        Msg.send(sender, String.format("Successfully set &b%s &lives to &b%o",
+        Msg.send(sender, String.format("Successfully set &b%s lives to &b%o",
                 target.getName(),
                 Integer.parseInt(args[1])), "&3");
 
