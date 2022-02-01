@@ -10,16 +10,21 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
+
+import static customhardcore.customhardcore.Levelling.PlayerData.checkMissingElements;
 
 public class PlayerSave extends FileHandler {
 
     private static final CustomHardcore instance = CustomHardcore.getInstance();
     public static HashMap<UUID, PlayerData> players;
+    private static final String folderName = "PlayerSaves";
 
     public static void initialisePlayer(@Nonnull Player player) {
-        String fileString = getSaveFileDir(instance, player, "PlayerSaves");
+        String fileString = getSaveFileDir(instance, player, folderName);
         if (!new File(fileString).exists())
             createNewSave(fileString, player);
 
@@ -59,7 +64,7 @@ public class PlayerSave extends FileHandler {
             Logger.error("Failed to save player file - player is null");
             return;
         }
-        writeToFile(playerData, new File(getSaveFileDir(instance, player, "PlayerSaves")));
+        writeToFile(playerData, new File(getSaveFileDir(instance, player, folderName)));
     }
 
     public static PlayerData calculateLevel(Player player) {
@@ -119,5 +124,29 @@ public class PlayerSave extends FileHandler {
     public static void giveUnlock(PlayerData playerData, Unlocks unlock) {
         playerData.addUnlock(unlock);
         players.replace(playerData.getUuid(), playerData);
+    }
+
+    public static void checkForNewElements() {
+        String folderString = getSaveFolderDir(instance, folderName);
+        Logger.info("Checking save files for missing elements in: " + folderString);
+        File folder = new File(folderString);
+        if (!folder.exists())
+            return;
+        File[] files = folder.listFiles();
+        if (files == null || files.length <= 0)
+            return;
+
+        Arrays.stream(files)
+                .filter(file -> file.getName().toLowerCase().contains(".json"))
+                .map(file -> readFromFile(file.getAbsolutePath(), PlayerData.class))
+                .filter(Objects::nonNull)
+                .forEach(playerData -> {
+                    PlayerData newPlayerData = checkMissingElements(playerData);
+                    Logger.info(String.format("Does %s need updating? %s", playerData.getId(), newPlayerData != null ? "Yes" : "No"));
+                    if (newPlayerData != null && newPlayerData.getUuid() != null) {
+                        File file = new File(getSaveFileDir(instance, newPlayerData.getUuid(), folderName));
+                        writeToFile(newPlayerData, file);
+                    }
+                });
     }
 }

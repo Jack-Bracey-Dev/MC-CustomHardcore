@@ -27,12 +27,7 @@ public enum ShopItems {
     SPECIAL_COBBLE_GEN("specialcobblegen", new ShopItem("Special Cobble Generator", 8, Material.COBBLESTONE)) {
         @Override
         public void purchase(Player player) {
-            PlayerData playerData = PlayerSave.getPlayerData(player);
-            if (SPECIAL_COBBLE_GEN.canAfford(player, playerData)) {
-                PlayerSave.giveUnlock(playerData, Unlocks.SPECIAL_COBBLE_GEN);
-                Msg.send(player, "Congratulations on purchasing special cobblestone, cobblestone generators" +
-                        " will now spawn ores and gems when you're close!");
-            }
+            SPECIAL_COBBLE_GEN.attemptPurchaseUnlock(player, ShopItems.SPECIAL_COBBLE_GEN, Unlocks.SPECIAL_COBBLE_GEN);
         }
     };
 
@@ -67,6 +62,26 @@ public enum ShopItems {
             return true;
         Msg.send(player, String.format("You cannot afford that item, you only have %o points", playerData.getPoints()));
         return false;
+    }
+
+    private boolean alreadyOwns(PlayerData playerData, Unlocks unlock) {
+        return playerData.getUnlocks().contains(unlock);
+    }
+
+    private void attemptPurchaseUnlock(Player player, ShopItems shopItem, Unlocks unlock) {
+        PlayerData playerData = PlayerSave.getPlayerData(player);
+        if (shopItem.alreadyOwns(playerData, unlock)) {
+            Msg.send(player, "You already own this unlock");
+            return;
+        }
+        if (!shopItem.canAfford(player, playerData)) {
+            Msg.send(player, String.format("You can not afford this item, it costs %o points, and you have %o",
+                    this.getShopItem().getPrice(), playerData.getPoints()));
+            return;
+        }
+        PlayerSave.giveUnlock(playerData, unlock);
+        Msg.send(player, "Congratulations on purchasing special cobblestone, cobblestone generators" +
+                " will now spawn ores and gems when you're close!");
     }
 
 }

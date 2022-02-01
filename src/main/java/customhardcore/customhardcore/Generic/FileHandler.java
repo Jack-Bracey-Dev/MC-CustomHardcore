@@ -10,11 +10,20 @@ import org.bukkit.entity.Player;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 public class FileHandler {
 
     public static String getSaveFileDir(CustomHardcore instance, Player player, String folderName) {
-        return instance.getDataFolder().getAbsolutePath()+"\\"+folderName+"\\"+player.getUniqueId()+".json";
+        return getSaveFileDir(instance, player.getUniqueId(), folderName);
+    }
+
+    public static String getSaveFileDir(CustomHardcore instance, UUID id, String folderName) {
+        return instance.getDataFolder().getAbsolutePath()+"\\"+folderName+"\\"+id+".json";
+    }
+
+    public static String getSaveFolderDir(CustomHardcore instance, String folderName) {
+        return instance.getDataFolder().getAbsolutePath()+"\\"+folderName;
     }
 
     public static String getSaveFolder(String saveFileDir) {

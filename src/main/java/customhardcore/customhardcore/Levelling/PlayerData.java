@@ -125,4 +125,31 @@ public class PlayerData implements Serializable {
         this.points++;
         this.nextLevelXp = PlayerSave.getNextLevelXpAmount(this.level);
     }
+
+    public static PlayerData checkMissingElements(PlayerData playerData) {
+        boolean hasMissingValues = false;
+        if (playerData.getLevel() == null) {
+            playerData.setLevel(0);
+            hasMissingValues = true;
+        }
+        if (playerData.getXp() == null) {
+            playerData.setXp(0);
+            hasMissingValues = true;
+        }
+        if (playerData.getNextLevelXp() == null) {
+            playerData.setNextLevelXp(PlayerSave.getNextLevelXpAmount(1));
+            hasMissingValues = true;
+        }
+        if (playerData.getPoints() == null) {
+            playerData.setPoints(0);
+            hasMissingValues = true;
+        }
+        if (playerData.getUnlocks() == null) {
+            playerData.setUnlocks(new ArrayList<>());
+            hasMissingValues = true;
+        }
+
+        return hasMissingValues ? playerData : null;
+    }
+
 }

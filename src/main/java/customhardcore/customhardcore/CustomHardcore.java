@@ -5,6 +5,7 @@ import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Misc;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
+import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -30,6 +31,8 @@ public final class CustomHardcore extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new EventListeners(), this);
         enableCommands();
+
+        PlayerSave.checkForNewElements();
 
         if (Bukkit.getOnlinePlayers().size() > 0 && ConfigurationHelper.isMaxDeathsEnabled())
             for (Player player : Bukkit.getOnlinePlayers())
