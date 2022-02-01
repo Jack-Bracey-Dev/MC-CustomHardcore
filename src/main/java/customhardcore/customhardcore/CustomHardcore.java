@@ -33,6 +33,7 @@ public final class CustomHardcore extends JavaPlugin {
         enableCommands();
 
         PlayerSave.checkForNewElements();
+        PlayerSpecificSettings.checkForNewElements();
 
         if (Bukkit.getOnlinePlayers().size() > 0 && ConfigurationHelper.isMaxDeathsEnabled())
             for (Player player : Bukkit.getOnlinePlayers())

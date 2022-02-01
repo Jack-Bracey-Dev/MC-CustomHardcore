@@ -21,10 +21,10 @@ public class PlayerSave extends FileHandler {
 
     private static final CustomHardcore instance = CustomHardcore.getInstance();
     public static HashMap<UUID, PlayerData> players;
-    private static final String folderName = "PlayerSaves";
+    private static final String FOLDER = "PlayerSaves";
 
     public static void initialisePlayer(@Nonnull Player player) {
-        String fileString = getSaveFileDir(instance, player, folderName);
+        String fileString = getSaveFileDir(instance, player, FOLDER);
         if (!new File(fileString).exists())
             createNewSave(fileString, player);
 
@@ -64,7 +64,7 @@ public class PlayerSave extends FileHandler {
             Logger.error("Failed to save player file - player is null");
             return;
         }
-        writeToFile(playerData, new File(getSaveFileDir(instance, player, folderName)));
+        writeToFile(playerData, new File(getSaveFileDir(instance, player, FOLDER)));
     }
 
     public static PlayerData calculateLevel(Player player) {
@@ -127,7 +127,7 @@ public class PlayerSave extends FileHandler {
     }
 
     public static void checkForNewElements() {
-        String folderString = getSaveFolderDir(instance, folderName);
+        String folderString = getSaveFolderDir(instance, FOLDER);
         Logger.info("Checking save files for missing elements in: " + folderString);
         File folder = new File(folderString);
         if (!folder.exists())
@@ -141,10 +141,10 @@ public class PlayerSave extends FileHandler {
                 .map(file -> readFromFile(file.getAbsolutePath(), PlayerData.class))
                 .filter(Objects::nonNull)
                 .forEach(playerData -> {
-                    PlayerData newPlayerData = checkMissingElements(playerData);
+                    PlayerData newPlayerData = PlayerData.checkMissingElements(playerData);
                     Logger.info(String.format("Does %s need updating? %s", playerData.getId(), newPlayerData != null ? "Yes" : "No"));
                     if (newPlayerData != null && newPlayerData.getUuid() != null) {
-                        File file = new File(getSaveFileDir(instance, newPlayerData.getUuid(), folderName));
+                        File file = new File(getSaveFileDir(instance, newPlayerData.getUuid(), FOLDER));
                         writeToFile(newPlayerData, file);
                     }
                 });
