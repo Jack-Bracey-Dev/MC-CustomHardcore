@@ -95,16 +95,20 @@ public class PlayerSave extends FileHandler {
         Integer previousLevel = getNextLevelXpAmount(playerData.getLevel()-1);
         Integer nextLevel = getNextLevelXpAmount(playerData.getLevel());
         long firstCalc = nextLevel - previousLevel;
-        double percentage = ((double) playerData.getXp() / firstCalc);
-        if (percentage == 0)
-            return insertStringIntoString(progressBar, 0);
+        double percentage = ((double) (playerData.getXp()-previousLevel) / firstCalc);
         int progressPoint = Math.toIntExact(Math.round(barLength * percentage));
         return insertStringIntoString(progressBar, progressPoint);
     }
 
     private static String insertStringIntoString(String original, int progressPoint) {
+        if (progressPoint == 0)
+            return original;
+        if (progressPoint > original.length())
+            progressPoint = original.length();
+
         String start = original.substring(0, progressPoint);
-        String end = original.substring(progressPoint+1);
+        String end = original.substring(progressPoint);
+
         return String.format("%s%s%s", start, "&4&l", end);
     }
 
