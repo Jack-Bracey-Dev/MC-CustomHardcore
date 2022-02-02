@@ -16,6 +16,10 @@ import javax.annotation.Nullable;
 public class ScoreboardHelper {
 
     private static void createBoard(Player player) {
+
+        PlayerSettings playerSettings = PlayerSpecificSettings.getPlayerSettings(player);
+        if (!playerSettings.getSettings().get(Settings.TOGGLE_SCOREBOARD)) return;
+
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         if (manager == null) return;
 
