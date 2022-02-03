@@ -36,7 +36,7 @@ public class UIHelper {
     }
 
     public static void addBooleanSettingItem(Inventory inventory, Settings setting, Boolean bool) {
-        ItemStack item = new ItemStack(bool ? Material.GREEN_CONCRETE : Material.RED_CONCRETE);
+        ItemStack item = new ItemStack(bool ? Material.GREEN_CONCRETE : Material.BARRIER);
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             Logger.error("Could not create player setting - meta null");
@@ -94,7 +94,7 @@ public class UIHelper {
             return null;
         }
 
-        ItemStack item = new ItemStack(isSet ? Material.GREEN_CONCRETE : Material.RED_CONCRETE);
+        ItemStack item = new ItemStack(isSet ? Material.GREEN_CONCRETE : Material.BARRIER);
         ItemMeta meta = item.getItemMeta();
 
         if (meta == null) return null;
