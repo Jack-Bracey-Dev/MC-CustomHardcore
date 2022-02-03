@@ -45,3 +45,11 @@ commands:
     usage: /settings
     permission: CustomHardcore.settings
     permission-message: You don't have permission to use that
+
+  xp:
+    description: Display the player's xp, can take a player argument
+    usage: /xp
+    permission: CustomHardcore.xp
+    permission-message: You don't have permission to use that
+    aliases:
+      - experience

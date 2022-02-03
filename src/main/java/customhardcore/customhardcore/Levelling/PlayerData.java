@@ -3,6 +3,7 @@ package customhardcore.customhardcore.Levelling;
 import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.Unlocks;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
+import customhardcore.customhardcore.Helpers.Logger;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
@@ -161,5 +162,11 @@ public class PlayerData implements Serializable {
 
     public void removeLife() {
         this.lives--;
+    }
+
+    public int getXpLeft() {
+        Logger.info(getNextLevelXp() + " - " + getXp());
+        Logger.info("" + (getNextLevelXp() - getXp()));
+        return getNextLevelXp() - getXp();
     }
 }

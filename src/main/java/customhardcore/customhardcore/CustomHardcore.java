@@ -43,7 +43,7 @@ public final class CustomHardcore extends JavaPlugin {
 
     private void enableCommands() {
         List<String> commands = Arrays.asList("get_player_deaths","set_starting_lives","set_remaining_lives","open_config",
-                "points_shop","settings");
+                "points_shop","settings","xp");
         commands.forEach(command -> Objects.requireNonNull(getCommand(command)).setExecutor(new Commands()));
     }
 

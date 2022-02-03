@@ -1,5 +1,6 @@
 package customhardcore.customhardcore;
 
+import com.google.common.base.Strings;
 import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.InvUI;
 import customhardcore.customhardcore.Enums.Settings;
@@ -44,8 +45,37 @@ public class Commands implements CommandExecutor {
                 break;
             case "settings":
                 openUI(sender, InvUI.SETTINGS);
+                break;
+            case "xp":
+                getXp(sender, args);
+                break;
         }
         return true;
+    }
+
+    private void getXp(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player))
+            return;
+        Player player = (Player) sender;
+
+        if (args.length <= 0) {
+            PlayerData playerData = PlayerSave.getPlayerData(player);
+            Msg.send(player, String.format("Your xp: %s. You have %s xp left until level %s",
+                    playerData.getXp(), playerData.getXpLeft(),
+                    (playerData.getLevel()+1)));
+        } else {
+            String username = args[0];
+            Player target = Bukkit.getPlayer(username);
+            if (target == null) {
+                Msg.send(player, "&4That player is not online");
+                return;
+            }
+            PlayerData targetPlayerData = PlayerSave.getPlayerData(target);
+            Msg.send(target, String.format("%s's xp: %s. You have %s xp left until level %s",
+                    username, targetPlayerData.getXp(), targetPlayerData.getXpLeft(),
+                    (targetPlayerData.getLevel()+1)));
+        }
+
     }
 
     private void openUI(CommandSender sender, InvUI invUI) {
