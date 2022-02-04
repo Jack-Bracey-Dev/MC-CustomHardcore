@@ -3,20 +3,24 @@ package customhardcore.customhardcore;
 import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Msg;
+import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.PlayerHelper;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
 import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import customhardcore.customhardcore.SpecialAbilities.SpecialCobbleGen;
 import customhardcore.customhardcore.UI.InventoryEvents;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -44,6 +48,7 @@ public class EventListeners implements Listener {
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
+
         if (event.getEntity() instanceof Player) {
             Player player = ((Player) event.getEntity());
             Bukkit.getServer().getScheduler()
@@ -53,6 +58,18 @@ public class EventListeners implements Listener {
                 PlayerHelper.onDeathEvent(player);
             }
         }
+    }
+
+    @EventHandler
+    public void onPlayerAttack(EntityDamageByEntityEvent event) {
+
+        Player attackingPlayer = event.getDamager() instanceof Player ? (Player) event.getDamager() : null;
+        Player attackedPlayer = event.getEntity() instanceof Player ? (Player) event.getEntity() : null;
+
+        if (attackingPlayer == null || attackedPlayer == null) return;
+
+        if (!PlayerHelper.checkPlayerCanAttackPlayer(attackingPlayer, attackedPlayer)) event.setCancelled(true);
+
     }
 
     @EventHandler

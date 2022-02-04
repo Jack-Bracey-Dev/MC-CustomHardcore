@@ -1,7 +1,8 @@
 package customhardcore.customhardcore.Enums;
 
 public enum Settings {
-    TOGGLE_SCOREBOARD("Toggle Scoreboard", true);
+    TOGGLE_SCOREBOARD("Toggle Scoreboard", true),
+    TOGGLE_PVP("Toggle PvP", true);
 
     private String displayName;
     private Boolean defaultValue;

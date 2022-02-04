@@ -6,7 +6,10 @@ import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Enums.ShopItems;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
+import customhardcore.customhardcore.Helpers.PlayerHelper;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
+import customhardcore.customhardcore.Levelling.PlayerData;
+import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.Objects.PlayerSettings;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import org.bukkit.NamespacedKey;
@@ -109,6 +112,9 @@ public class InventoryEvents {
             else
                 ScoreboardHelper.removeBoard(player);
         }
+
+        if (setting.equals(Settings.TOGGLE_PVP) && (!PlayerHelper.checkPlayerCanTogglePvP(player))) PlayerSpecificSettings.toggleSetting(player, setting);
+        
 
         reloadInventory(event, InvUI.SETTINGS);
     }
