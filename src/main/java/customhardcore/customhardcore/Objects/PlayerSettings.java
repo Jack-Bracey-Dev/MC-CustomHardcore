@@ -18,7 +18,7 @@ public class PlayerSettings implements Serializable {
             map.put(value, value.getDefaultValue());
         this.settings = map;
     }
-
+    
     public String getId() {
         return id;
     }
