@@ -104,9 +104,7 @@ public class Commands implements CommandExecutor {
                 target.getName(),
                 Integer.parseInt(args[1])), "&3");
 
-        if (ConfigurationHelper.isMaxDeathsEnabled() && PlayerSpecificSettings.getPlayerSettings(target)
-                .getSettings().get(Settings.TOGGLE_SCOREBOARD))
-            ScoreboardHelper.updatePlayerBoards();
+        ScoreboardHelper.updatePlayerBoards();
     }
 
     private void setStartingLives(CommandSender sender, @Nullable String[] args) {

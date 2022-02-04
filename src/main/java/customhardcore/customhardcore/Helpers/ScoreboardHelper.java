@@ -1,13 +1,12 @@
 package customhardcore.customhardcore.Helpers;
 
 import customhardcore.customhardcore.Enums.Settings;
-import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.Levelling.PlayerData;
+import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.Objects.PlayerSettings;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
@@ -55,6 +54,9 @@ public class ScoreboardHelper {
     }
 
     public static void createOrUpdatePlayerBoard(@Nullable Player player) {
+        if (!ConfigurationHelper.isMaxDeathsEnabled())
+            return;
+
         if (player == null) return;
 
         Objective objective = player.getScoreboard().getObjective(DisplaySlot.SIDEBAR);
@@ -65,12 +67,6 @@ public class ScoreboardHelper {
     }
 
     public static void updateBoard(Player player) {
-        Objective objective = player.getScoreboard().getObjective(DisplaySlot.SIDEBAR);
-        if (objective == null) {
-            createBoard(player);
-            return;
-        }
-
         removeBoard(player);
         createBoard(player);
     }
@@ -82,10 +78,11 @@ public class ScoreboardHelper {
     }
 
     public static void updatePlayerBoards() {
-        Bukkit.getServer().getOnlinePlayers().stream().
-                filter(player -> PlayerSpecificSettings.getPlayerSettings(player)
-                        .getSettings().get(Settings.TOGGLE_SCOREBOARD))
-                .forEach(ScoreboardHelper::updateBoard);
+        if (ConfigurationHelper.isMaxDeathsEnabled())
+            Bukkit.getServer().getOnlinePlayers().stream().
+                    filter(player -> PlayerSpecificSettings.getPlayerSettings(player)
+                            .getSettings().get(Settings.TOGGLE_SCOREBOARD))
+                    .forEach(ScoreboardHelper::updateBoard);
     }
 
 }

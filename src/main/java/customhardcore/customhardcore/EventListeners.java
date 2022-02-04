@@ -89,9 +89,7 @@ public class EventListeners implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         PlayerSave.initialisePlayer(event.getPlayer());
         PlayerSpecificSettings.initialisePlayerSettings(event.getPlayer());
-        if (ConfigurationHelper.isMaxDeathsEnabled() && PlayerSpecificSettings.getPlayerSettings(event.getPlayer())
-                .getSettings().get(Settings.TOGGLE_SCOREBOARD))
-            ScoreboardHelper.updatePlayerBoards();
+        ScoreboardHelper.updatePlayerBoards();
     }
 
     @EventHandler

@@ -119,8 +119,7 @@ public class PlayerSave extends FileHandler {
         if (playerData.getXp() >= playerData.getNextLevelXp()) {
             playerData.increaseLevel();
             Msg.sendGlobal(String.format("%s just reached level %o", player.getName(), playerData.getLevel()));
-            if (ConfigurationHelper.isMaxDeathsEnabled())
-                ScoreboardHelper.updatePlayerBoards();
+            ScoreboardHelper.updatePlayerBoards();
         }
         replacePlayer(playerData);
         ScoreboardHelper.createOrUpdatePlayerBoard(player);

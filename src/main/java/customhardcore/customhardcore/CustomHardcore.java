@@ -35,9 +35,8 @@ public final class CustomHardcore extends JavaPlugin {
 
         PlayerSave.checkForNewElements();
 
-        if (Bukkit.getOnlinePlayers().size() > 0 && ConfigurationHelper.isMaxDeathsEnabled())
+        if (Bukkit.getOnlinePlayers().size() > 0)
             for (Player player : Bukkit.getOnlinePlayers())
-                if (PlayerSpecificSettings.getPlayerSettings(player).getSettings().get(Settings.TOGGLE_SCOREBOARD))
                 ScoreboardHelper.createOrUpdatePlayerBoard(player);
     }
 
