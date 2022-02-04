@@ -2,17 +2,22 @@ package customhardcore.customhardcore.Helpers;
 
 import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Enums.ConfigurationValues;
+import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Levelling.PlayerData;
 import customhardcore.customhardcore.Levelling.PlayerSave;
+import customhardcore.customhardcore.Objects.PlayerSettings;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -99,6 +104,49 @@ public class PlayerHelper {
         ScoreboardHelper.removeBoard(event.getPlayer());
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.scheduleSyncDelayedTask(CustomHardcore.getInstance(), ScoreboardHelper::updatePlayerBoards, 10L);
+    }
+
+    public static Boolean checkPlayerCanAttackPlayer(Player attackingPlayer, Player attackedPlayer) {
+
+        Boolean attackingPlayerPvP = PlayerSpecificSettings.getPlayerSettings(attackingPlayer)
+                                                            .getSettings().get(Settings.TOGGLE_PVP);
+
+        Boolean attackedPlayerPvP = PlayerSpecificSettings.getPlayerSettings(attackedPlayer)
+                                                            .getSettings().get(Settings.TOGGLE_PVP);
+
+        if (!attackingPlayerPvP) {
+            Msg.send(attackingPlayer, "Please enable PvP to attack Players!", "[CustomHardcore] ");
+            return false; 
+        }
+
+        if (!attackedPlayerPvP) {
+            Msg.send(attackingPlayer, "Attack Failed. This player has PvP disabled!", "[CustomHardcore] ");
+            return false;
+        }
+
+        PlayerData attackingPlayerData = PlayerSave.getPlayerData(attackingPlayer);
+        PlayerData attackedPlayerData = PlayerSave.getPlayerData(attackedPlayer);
+        Date currentDateTime = new Date();
+        attackingPlayerData.setLastCombatTime(currentDateTime);
+        attackedPlayerData.setLastCombatTime(currentDateTime);
+        
+        return true;
+
+    }
+
+    public static Boolean checkPlayerCanTogglePvP(Player player) {
+
+        PlayerData playerData = PlayerSave.getPlayerData(player);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(playerData.getLastCombatTime());
+        calendar.add(Calendar.MINUTE, 10);
+        
+        if (new Date().after(calendar.getTime())) return true;
+
+        Msg.send(player, "You cannot toggle PvP within 10 minutes of combat!", "[CustomHardcore] ");
+        return false;
+
     }
 
 }

@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +29,8 @@ public class PlayerData implements Serializable {
 
     private Integer lives;
 
+    private Date lastCombatTime;
+
     public PlayerData(Player player) {
         this.id = player.getUniqueId().toString();
         this.xp = 0;
@@ -35,6 +39,11 @@ public class PlayerData implements Serializable {
         this.nextLevelXp = PlayerSave.getNextLevelXpAmount(1);
         this.unlocks = new ArrayList<>();
         this.lives = ConfigurationHelper.getInt(ConfigurationValues.STARTING_LIVES);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MINUTE, -10);
+        this.lastCombatTime = calendar.getTime();
     }
 
     public PlayerData() {
@@ -130,6 +139,14 @@ public class PlayerData implements Serializable {
         this.nextLevelXp = PlayerSave.getNextLevelXpAmount(this.level);
     }
 
+    public void setLastCombatTime(Date attackTime) {
+        this.lastCombatTime = attackTime;
+    }
+
+    public Date getLastCombatTime() {
+        return lastCombatTime;
+    }
+
     public static PlayerData checkMissingElements(PlayerData playerData) {
         boolean hasMissingValues = false;
         if (playerData.getLevel() == null) {
@@ -154,6 +171,13 @@ public class PlayerData implements Serializable {
         }
         if (playerData.getLives() == null) {
             playerData.setLives(ConfigurationHelper.getInt(ConfigurationValues.STARTING_LIVES));
+            hasMissingValues = true;
+        }
+        if (playerData.getLastCombatTime() == null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.MINUTE, -10);
+            playerData.lastCombatTime = calendar.getTime();
             hasMissingValues = true;
         }
 
