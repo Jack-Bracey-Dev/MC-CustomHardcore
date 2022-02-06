@@ -59,8 +59,10 @@ public class InventoryEvents {
     public static void shopEvent(InventoryClickEvent event) {
         event.setCancelled(true);
 
-        if (!(event.getWhoClicked() instanceof Player))
+        if (!(event.getWhoClicked() instanceof Player)) {
+            Logger.error("shopEvent not an instance of a player");
             return;
+        }
 
         Player player = (Player) event.getWhoClicked();
 
@@ -71,8 +73,11 @@ public class InventoryEvents {
                 shopItem.getShopItem().getDisplayName().equalsIgnoreCase(event.getCurrentItem().getItemMeta().getDisplayName()))
                 .findFirst();
 
-        if (!shopItemsOptional.isPresent())
+        if (!shopItemsOptional.isPresent()) {
+            Logger.error("shopEvent selected item is not a valid shop item (" +
+                    event.getCurrentItem().getItemMeta().getDisplayName() + ")");
             return;
+        }
 
         ShopItems shopItemsValue = shopItemsOptional.get();
         shopItemsValue.purchase(player);

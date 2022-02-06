@@ -5,7 +5,6 @@ import customhardcore.customhardcore.Levelling.PlayerData;
 import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.Objects.ShopItem;
 import org.bukkit.Material;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 
 public enum ShopItems {
@@ -14,13 +13,10 @@ public enum ShopItems {
         public void purchase(Player player) {
             PlayerData playerData = PlayerSave.getPlayerData(player);
             if (LIFE.canAfford(player, playerData)) {
-                if (player.getStatistic(Statistic.DEATHS) > 0) {
-                    player.setStatistic(Statistic.DEATHS, player.getStatistic(Statistic.DEATHS) - 1);
-                    PlayerSave.spendPoint(player, this.getShopItem().getPrice());
-                    Msg.send(player, "Congratulations on purchasing a life");
-                } else {
-                    Msg.send(player, "You do not have any deaths");
-                }
+                playerData.setLives(playerData.getLives() + 1);
+                PlayerSave.spendPoint(player, this.getShopItem().getPrice());
+                PlayerSave.replacePlayer(playerData);
+                Msg.send(player, "Congratulations on purchasing a life");
             }
         }
     },
