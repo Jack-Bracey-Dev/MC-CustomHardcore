@@ -1,9 +1,6 @@
 package customhardcore.customhardcore;
 
-import customhardcore.customhardcore.Enums.Settings;
-import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Msg;
-import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.PlayerHelper;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
 import customhardcore.customhardcore.Levelling.PlayerSave;
@@ -14,7 +11,6 @@ import customhardcore.customhardcore.UI.InventoryEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

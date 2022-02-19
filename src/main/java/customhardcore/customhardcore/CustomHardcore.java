@@ -1,13 +1,11 @@
 package customhardcore.customhardcore;
 
 import customhardcore.customhardcore.Enums.ConfigurationValues;
-import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Misc;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
 import customhardcore.customhardcore.Levelling.PlayerSave;
-import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
