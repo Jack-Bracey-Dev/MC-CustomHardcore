@@ -39,7 +39,7 @@ public class UIHelper {
         ItemStack item = new ItemStack(bool ? Material.GREEN_CONCRETE : Material.BARRIER);
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
-            Logger.error("Could not create player setting - meta null");
+            Logger.error(UIHelper.class, "Could not create player setting - meta null");
             return;
         }
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', setting.getDisplayName()));
@@ -90,7 +90,7 @@ public class UIHelper {
 
     private static ItemStack createItem(String name, boolean isSet, @Nullable String currentValue, InvUI invUI) {
         if (name == null) {
-            Logger.error("Cannot create item with null name");
+            Logger.error(UIHelper.class, "Cannot create item with null name");
             return null;
         }
 

@@ -1,7 +1,7 @@
 package customhardcore.customhardcore.Helpers;
 
 import customhardcore.customhardcore.Enums.Settings;
-import customhardcore.customhardcore.Levelling.PlayerData;
+import customhardcore.customhardcore.Objects.PlayerData;
 import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.Objects.PlayerSettings;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;

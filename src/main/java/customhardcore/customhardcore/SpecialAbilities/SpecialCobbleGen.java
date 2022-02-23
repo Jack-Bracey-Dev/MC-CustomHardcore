@@ -2,7 +2,7 @@ package customhardcore.customhardcore.SpecialAbilities;
 
 import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Enums.Unlocks;
-import customhardcore.customhardcore.Levelling.PlayerData;
+import customhardcore.customhardcore.Objects.PlayerData;
 import customhardcore.customhardcore.Levelling.PlayerSave;
 import org.bukkit.Material;
 import org.bukkit.World;

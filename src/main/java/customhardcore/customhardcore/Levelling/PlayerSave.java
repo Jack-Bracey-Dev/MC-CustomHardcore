@@ -3,11 +3,10 @@ package customhardcore.customhardcore.Levelling;
 import customhardcore.customhardcore.CustomHardcore;
 import customhardcore.customhardcore.Enums.Unlocks;
 import customhardcore.customhardcore.Generic.FileHandler;
-import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Msg;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
-import org.bukkit.Bukkit;
+import customhardcore.customhardcore.Objects.PlayerData;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
@@ -16,8 +15,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
-
-import static customhardcore.customhardcore.Levelling.PlayerData.checkMissingElements;
 
 public class PlayerSave extends FileHandler {
 
@@ -39,7 +36,7 @@ public class PlayerSave extends FileHandler {
             return;
         PlayerData playerData = new PlayerData(player);
         if (!writeToFile(playerData, playerFile))
-            Logger.error("Failed to write player data to file");
+            Logger.error(PlayerSave.class, "Failed to write player data to file");
     }
 
     private static PlayerData getPlayerSave(String fileString) {
@@ -67,7 +64,7 @@ public class PlayerSave extends FileHandler {
 
     private static void save(PlayerData playerData, Player player) {
         if (player == null) {
-            Logger.error("Failed to save player file - player is null");
+            Logger.error(PlayerSave.class, "Failed to save player file - player is null");
             return;
         }
         writeToFile(playerData, new File(getSaveFileDir(instance, player, FOLDER)));
@@ -76,7 +73,7 @@ public class PlayerSave extends FileHandler {
     public static PlayerData calculateLevel(Player player) {
         PlayerData playerData = getPlayerData(player);
         if (playerData == null) {
-            Logger.error(String.format("Could not get player data for %s (%s)", player.getName(), player.getUniqueId()));
+            Logger.error(PlayerSave.class, String.format("Could not get player data for %s (%s)", player.getName(), player.getUniqueId()));
             return null;
         }
 

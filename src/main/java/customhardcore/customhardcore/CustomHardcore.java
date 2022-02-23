@@ -1,13 +1,13 @@
 package customhardcore.customhardcore;
 
+import customhardcore.customhardcore.Database.ConnectionManager;
 import customhardcore.customhardcore.Enums.ConfigurationValues;
-import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
-import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.Misc;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
 import customhardcore.customhardcore.Levelling.PlayerSave;
-import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
+import customhardcore.customhardcore.Objects.PlayerData;
+import customhardcore.customhardcore.Objects.Unlock;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,10 +22,8 @@ public final class CustomHardcore extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        if (getServer().isHardcore())
-            Logger.info("&4should not be used on hardcore servers");
-        else
-            Logger.info("&astarted");
+
+        initialiseDatabase();
 
         ConfigurationHelper.checkAndSetConfig();
         Misc.createSigns(getConfig().getLocation(ConfigurationValues.SIGN_LOCATION.name()));
@@ -40,16 +38,21 @@ public final class CustomHardcore extends JavaPlugin {
                 ScoreboardHelper.createOrUpdatePlayerBoard(player);
     }
 
-    private void enableCommands() {
-        List<String> commands = Arrays.asList("get_player_deaths","set_starting_lives","set_remaining_lives","open_config",
-                "points_shop","settings","xp");
-        commands.forEach(command -> Objects.requireNonNull(getCommand(command)).setExecutor(new Commands()));
+    private void initialiseDatabase() {
+        ConnectionManager.updateSchema(PlayerData.class, new PlayerData());
+        ConnectionManager.updateSchema(Unlock.class, new Unlock());
     }
 
     @Override
     public void onDisable() {
         if (Bukkit.getServer().getOnlinePlayers().size() > 0)
             Bukkit.getServer().getOnlinePlayers().forEach(ScoreboardHelper::removeBoard);
+    }
+
+    private void enableCommands() {
+        List<String> commands = Arrays.asList("get_player_deaths","set_starting_lives","set_remaining_lives","open_config",
+                "points_shop","settings","xp");
+        commands.forEach(command -> Objects.requireNonNull(getCommand(command)).setExecutor(new Commands()));
     }
 
     public static CustomHardcore getInstance() {

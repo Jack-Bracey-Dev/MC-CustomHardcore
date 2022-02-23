@@ -5,12 +5,15 @@ import org.bukkit.ChatColor;
 
 public class Logger {
 
-    public static void error(String message) {
-        log("&4" + message);
+    public static <T> void error(Class<T> clazz, String message) {
+        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',
+                String.format("&4&l%s - %s", clazz.getSimpleName(), message)));
     }
 
-    public static <E extends Exception> void error(String message, E exception) {
-        Bukkit.getServer().getConsoleSender().sendMessage("&4" + message, exception.getMessage());
+    public static <T, E extends Exception> void error(Class<T> clazz, String message, E exception) {
+        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        String.format("&4&l%s - &r&4%s", clazz.getSimpleName(), message)),
+                ChatColor.translateAlternateColorCodes('&', "&c" + exception.getMessage()));
     }
 
     public static void info(String message) {

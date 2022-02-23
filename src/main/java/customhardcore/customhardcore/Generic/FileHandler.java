@@ -41,13 +41,13 @@ public class FileHandler {
                 Files.createDirectories(Paths.get(folder));
 
                 if (!file.createNewFile()) {
-                    Logger.error("Failed to create new file: " + directory);
+                    Logger.error(FileHandler.class, "Failed to create new file: " + directory);
                     return null;
                 }
             }
             return file;
         } catch (IOException e) {
-            Logger.error("Failed to create new file: " + directory, e);
+            Logger.error(FileHandler.class, "Failed to create new file: " + directory, e);
             return null;
         }
     }
@@ -62,7 +62,7 @@ public class FileHandler {
                     .create();
             gson.toJson(object, writer);
         } catch (IOException e) {
-            Logger.error("Failed to write data to file", e);
+            Logger.error(FileHandler.class, "Failed to write data to file", e);
             return false;
         }
         return true;
@@ -71,7 +71,7 @@ public class FileHandler {
     public static <T extends Serializable> T readFromFile(String fileDir, Class<T> clazz) {
         File file = new File(fileDir);
         if (!file.exists()) {
-            Logger.error("Could not read from file - file does not exist");
+            Logger.error(FileHandler.class, "Could not read from file - file does not exist");
             return null;
         }
 
@@ -79,7 +79,7 @@ public class FileHandler {
         try (JsonReader reader = new JsonReader(new FileReader(file))) {
             return gson.fromJson(reader, clazz);
         } catch (IOException e) {
-            Logger.error("Could not read from file", e);
+            Logger.error(FileHandler.class, "Could not read from file", e);
             return null;
         }
     }

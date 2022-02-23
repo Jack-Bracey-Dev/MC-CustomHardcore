@@ -1,21 +1,21 @@
-package customhardcore.customhardcore.Levelling;
+package customhardcore.customhardcore.Objects;
 
 import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.Unlocks;
+import customhardcore.customhardcore.Generic.DatabaseObject;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
+import customhardcore.customhardcore.Levelling.PlayerSave;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class PlayerData implements Serializable {
+public class PlayerData extends DatabaseObject implements Serializable {
 
-    private String id;
+    public String id;
 
     private Integer level;
 
@@ -193,4 +193,12 @@ public class PlayerData implements Serializable {
         Logger.info("" + (getNextLevelXp() - getXp()));
         return getNextLevelXp() - getXp();
     }
+
+    @Override
+    public List<Field> getIgnoredFields() {
+        List<Field> allFields = Arrays.asList(getClass().getDeclaredFields());
+        return allFields.stream().filter(field -> field.getName().equalsIgnoreCase("unlocks"))
+                .collect(Collectors.toList());
+    }
+
 }

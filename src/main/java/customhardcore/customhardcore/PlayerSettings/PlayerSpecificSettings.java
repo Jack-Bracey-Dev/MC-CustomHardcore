@@ -32,7 +32,7 @@ public class PlayerSpecificSettings extends FileHandler {
             return;
         PlayerSettings playerSettings = new PlayerSettings(player);
         if (!writeToFile(playerSettings, settingsFile))
-            Logger.error("Failed to write player data to file");
+            Logger.error(PlayerSpecificSettings.class, "Failed to write player data to file");
     }
 
     private static void addPlayer(Player player, PlayerSettings settings) {

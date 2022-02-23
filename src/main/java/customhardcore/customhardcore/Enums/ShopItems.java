@@ -1,7 +1,7 @@
 package customhardcore.customhardcore.Enums;
 
 import customhardcore.customhardcore.Helpers.Msg;
-import customhardcore.customhardcore.Levelling.PlayerData;
+import customhardcore.customhardcore.Objects.PlayerData;
 import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.Objects.ShopItem;
 import org.bukkit.Material;

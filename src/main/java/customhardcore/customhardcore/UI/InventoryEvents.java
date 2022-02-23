@@ -4,12 +4,9 @@ import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.InvUI;
 import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Enums.ShopItems;
-import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Logger;
 import customhardcore.customhardcore.Helpers.PlayerHelper;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
-import customhardcore.customhardcore.Levelling.PlayerData;
-import customhardcore.customhardcore.Levelling.PlayerSave;
 import customhardcore.customhardcore.Objects.PlayerSettings;
 import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import org.bukkit.NamespacedKey;
@@ -41,14 +38,14 @@ public class InventoryEvents {
                         PersistentDataType.STRING);
 
         if (name == null) {
-            Logger.error("Inventory item doesn't have metadata for name");
+            Logger.error(InventoryEvents.class, "Inventory item doesn't have metadata for name");
             return;
         }
 
         ConfigurationValues value = ConfigurationValues.getConfigValueByString(name);
 
         if (value == null) {
-            Logger.error("Could not get configuration value from onInventoryItemTouched");
+            Logger.error(InventoryEvents.class, "Could not get configuration value from onInventoryItemTouched");
             return;
         }
 
@@ -60,7 +57,7 @@ public class InventoryEvents {
         event.setCancelled(true);
 
         if (!(event.getWhoClicked() instanceof Player)) {
-            Logger.error("shopEvent not an instance of a player");
+            Logger.error(InventoryEvents.class, "shopEvent not an instance of a player");
             return;
         }
 
@@ -74,7 +71,7 @@ public class InventoryEvents {
                 .findFirst();
 
         if (!shopItemsOptional.isPresent()) {
-            Logger.error("shopEvent selected item is not a valid shop item (" +
+            Logger.error(InventoryEvents.class, "shopEvent selected item is not a valid shop item (" +
                     event.getCurrentItem().getItemMeta().getDisplayName() + ")");
             return;
         }

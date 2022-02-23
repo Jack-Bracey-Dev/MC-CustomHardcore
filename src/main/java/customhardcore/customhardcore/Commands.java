@@ -1,16 +1,13 @@
 package customhardcore.customhardcore;
 
-import com.google.common.base.Strings;
 import customhardcore.customhardcore.Enums.ConfigurationValues;
 import customhardcore.customhardcore.Enums.InvUI;
-import customhardcore.customhardcore.Enums.Settings;
 import customhardcore.customhardcore.Helpers.ConfigurationHelper;
 import customhardcore.customhardcore.Helpers.Msg;
 import customhardcore.customhardcore.Helpers.PlayerHelper;
 import customhardcore.customhardcore.Helpers.ScoreboardHelper;
-import customhardcore.customhardcore.Levelling.PlayerData;
+import customhardcore.customhardcore.Objects.PlayerData;
 import customhardcore.customhardcore.Levelling.PlayerSave;
-import customhardcore.customhardcore.PlayerSettings.PlayerSpecificSettings;
 import customhardcore.customhardcore.UI.UIHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
